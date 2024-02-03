@@ -1,0 +1,5 @@
+JSONTools/*.cs
+Test.exe
+Test.pdb
+.replit
+replit.nix
