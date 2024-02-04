@@ -1,17 +1,19 @@
 using System;
 using System.Text;
 using System.Linq;
+using System.Collections.Generic;
 
 public static class JSONTools {
-    public static string ENList(string[] list, string joiner="and") {
-        if (list.Length == 0) return "none";
-        if (list.Length == 1) return list[0];
-        if (list.Length == 2) return $"{list[0]} {joiner} {list[1]}";
+    static string ENList(IEnumerable<string> enumerable, string joiner="and") {
+        List<string> list = enumerable.ToList();
+        if (list.Count == 0) return "none";
+        if (list.Count == 1) return list[0];
+        if (list.Count == 2) return $"{list[0]} {joiner} {list[1]}";
         string beginning = "";
-        for (int i = 0; i < list.Length-1; i++) {
+        for (int i = 0; i < list.Count-1; i++) {
             beginning += list[i] + ", ";
         }
-        return $"{beginning}{joiner} {list[list.Length-1]}";
+        return $"{beginning}{joiner} {list[list.Count-1]}";
     }
 
     public static string ToLiteral(string input) {
@@ -67,7 +69,8 @@ public static class JSONTools {
                     case 'u':
                         if (i + 4 >= input.Length) {
                             throw new InvalidJSONException(
-                                $"Expected unicode code after '\\u'"
+                                "Expected unicode code after '\\u', found EOF", 
+                                new JSONSpan(i)
                             );
                         }
                         string hex = input.Substring(i+1, 4);
@@ -81,7 +84,8 @@ public static class JSONTools {
                                 code += scale * (nibble - 'a' + 10);
                             } else {
                                 throw new InvalidJSONException(
-                                    $"Expected hex digit, found {nibble}"
+                                    $"Expected hex digit, found {nibble}", 
+                                    new JSONSpan(i+j+1)
                                 );
                             }
                             scale *= 16;
@@ -91,9 +95,10 @@ public static class JSONTools {
                         break;
                     default:
                         throw new InvalidJSONException(
-                            $"Invalid escape code, '\\{chr}'"
+                            $"Invalid escape code, '\\{chr}'", new JSONSpan(i)
                         );
                 }
+                wasBackslash = false;
             } else {
                 if (chr == '\\') {
                     wasBackslash = true;
@@ -110,6 +115,11 @@ public static class JSONTools {
     static void Expect(string text, string next, int i_, out int i) {
         i = i_;
         while (true) {
+            if (i >= text.Length) {
+                throw new InvalidJSONException(
+                    $"Expected '{next}', found EOF", new JSONSpan(i)
+                );
+            }
             if (text.Substring(i).StartsWith(next)) {
                 i += next.Length;
                 return;
@@ -120,18 +130,18 @@ public static class JSONTools {
                 );
             }
             i++;
-            if (i >= text.Length) {
-                throw new InvalidJSONException(
-                    $"Expected '{next}', found EOF", new JSONSpan(i)
-                );
-            }
         }
     }
 
     static string ExpectAny(string text, string[] nexts, int i_, out int i) {
         i = i_;
-        string expected = ENList(nexts, "or");
+        string expected = ENList(nexts.Select(next=>$"'{next}'"), "or");
         while (true) {
+            if (i >= text.Length) {
+                throw new InvalidJSONException(
+                    $"Expected {expected}, found EOF", new JSONSpan(i)
+                );
+            }
             foreach (string next in nexts) {
                 if (text.Substring(i).StartsWith(next)) {
                     i += next.Length;
@@ -140,15 +150,10 @@ public static class JSONTools {
             }
             if (!Whitespace.Contains(text[i])) {
                 throw new InvalidJSONException(
-                    $"Expected '{expected}', found '{text[i]}'", new JSONSpan(i)
+                    $"Expected {expected}, found '{text[i]}'", new JSONSpan(i)
                 );
             }
             i++;
-            if (i >= text.Length) {
-                throw new InvalidJSONException(
-                    $"Expected '{expected}', found EOF", new JSONSpan(i)
-                );
-            }
         }
     }
 
@@ -173,6 +178,7 @@ public static class JSONTools {
     static string ExpectString(string text, int i_, out int i) {
         i = i_;
         Expect(text, "\"", i, out i);
+        int start = i;
         bool wasBackslash = false;
         string content = "";
         bool finished = false;
@@ -199,7 +205,7 @@ public static class JSONTools {
         try {
             return FromLiteral(content);
         } catch (InvalidJSONException e) {
-            e.span = new JSONSpan(i_, i-1);
+            e.span = e.span?.Shift(start);
             throw e;
         }
     }
@@ -248,13 +254,13 @@ public static class JSONTools {
         }
     }
 
-    public static IJSONValue ParseJSON(string json) {
-        return ParseJSON(json, 0, out int i);
+    public static IJSONValue ParseJSON(string text) {
+        return ParseJSON(text, 0, out int i);
     }
 
-    static IJSONValue ParseJSON(string json, int i_, out int i) {
+    static IJSONValue ParseJSON(string text, int i_, out int i) {
         i = i_;
-        char? chr = NextChar(json, i, out int valueStart);
+        char? chr = NextChar(text, i, out int valueStart);
         if (chr == null) {
             throw new InvalidJSONException(
                 $"Expected value, found EOF", new JSONSpan(i+1)
@@ -262,12 +268,12 @@ public static class JSONTools {
         }
         int start = i;
         if (chr.Value == '"') {
-            string str = ExpectString(json, i, out i);
+            string str = ExpectString(text, i, out i);
             JSONString jstr = new JSONString(str);
             jstr.span = new JSONSpan(start, i-1);
             return jstr;
         } else if (chr.Value == '-' || ('0' <= chr.Value && chr.Value <= '9')) {
-            NumUnion num = ExpectNumber(json, i, out i);
+            NumUnion num = ExpectNumber(text, i, out i);
             IJSONValue value;
             if (num.HasInt()) {
                 value = new JSONInt(num.GetInt());
@@ -278,7 +284,7 @@ public static class JSONTools {
             return value;
         } else if (chr.Value == '{') {
             i = valueStart;
-            chr = Peek(json, i);
+            chr = Peek(text, i);
             if (chr == null) {
                 throw new InvalidJSONException(
                     "Expected value or '}', found EOF", new JSONSpan(i+1)
@@ -286,16 +292,16 @@ public static class JSONTools {
             }
             JSONObject obj = new JSONObject();
             if (chr == '}') {
-                Expect(json, "}", i, out i);
+                Expect(text, "}", i, out i);
             } else {
                 string sep = null;
                 do {
-                    string key = ExpectString(json, i, out i);
-                    Expect(json, ":", i, out i);
-                    IJSONValue value = ParseJSON(json, i, out i);
+                    string key = ExpectString(text, i, out i);
+                    Expect(text, ":", i, out i);
+                    IJSONValue value = ParseJSON(text, i, out i);
                     obj[key] = value;
                     sep = ExpectAny(
-                        json, new string[] {",", "}"}, i, out i
+                        text, new string[] {",", "}"}, i, out i
                     );
                 } while (sep != "}");
             }
@@ -303,7 +309,7 @@ public static class JSONTools {
             return obj;
         } else if (chr.Value == '[') {
             i = valueStart;
-            chr = Peek(json, i);
+            chr = Peek(text, i);
             if (chr == null) {
                 throw new InvalidJSONException(
                     "Expected value or ']', found EOF", new JSONSpan(i+1)
@@ -311,14 +317,14 @@ public static class JSONTools {
             }
             JSONList list = new JSONList();
             if (chr == ']') {
-                Expect(json, "]", i, out i);
+                Expect(text, "]", i, out i);
             } else {
                 string sep = null;
                 do {
-                    IJSONValue value = ParseJSON(json, i, out i);
+                    IJSONValue value = ParseJSON(text, i, out i);
                     list.Add(value);
                     sep = ExpectAny(
-                        json, new string[] {",", "]"}, i, out i
+                        text, new string[] {",", "]"}, i, out i
                     );
                 } while (sep != "]");
             }
@@ -326,7 +332,7 @@ public static class JSONTools {
             return list;
         } else if ('A' <= chr.Value && chr.Value <= 'z') {
             string found = ExpectAny(
-                json, new string[] {"true", "false", "null"}, i, out i
+                text, new string[] {"true", "false", "null"}, i, out i
             );
             IJSONValue value;
             if (found == "true") {
@@ -345,5 +351,40 @@ public static class JSONTools {
                 $"Expected value, found '{chr.Value}'", new JSONSpan(i)
             );
         }
+    }
+
+    public static void ShowError(string text, InvalidJSONException err, string file=null, int showAroundErr=5) {
+        Console.ForegroundColor = ConsoleColor.DarkRed;
+        Console.Write("Error");
+        if (file != null) {
+            Console.Write(" in ");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write(file);
+        }
+        Console.ForegroundColor = ConsoleColor.DarkRed;
+        Console.Write(": ");
+        Console.ResetColor();
+        Console.WriteLine(err.Message);
+        int start = err.span.GetStart();
+        int end = err.span.GetEnd();
+        int showStart = Math.Max(Math.Min(start, text.Length-1)-showAroundErr, 0);
+        int showEnd = Math.Min(end+showAroundErr, text.Length-1);
+        for (int i = showStart; i <= showEnd; i++) {
+            Console.Write(text[i]);
+        }
+        Console.WriteLine();
+        Console.ForegroundColor = ConsoleColor.Red;
+        for (int i = showStart; i <= showEnd; i++) {
+            if (start <= i && i <= end) {
+                Console.Write('^');
+            } else {
+                Console.Write(' ');
+            }
+        }
+        if (end >= text.Length) {
+            Console.Write("^");
+        }
+        Console.ResetColor();
+        Console.WriteLine();
     }
 }

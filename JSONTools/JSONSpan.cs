@@ -45,4 +45,8 @@ public class JSONSpan {
     public override string ToString() {
         return $"{GetType().Name}({start}–{end})";
     }
+
+    public JSONSpan Shift(int amount) {
+        return new JSONSpan(start + amount, end + amount);
+    }
 }
