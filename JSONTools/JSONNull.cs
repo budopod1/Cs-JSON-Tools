@@ -8,4 +8,8 @@ public class JSONNull : IJSONValue {
     public string ToJSON() {
         return "null";
     }
+
+    public bool IsNull() {
+        return true;
+    }
 }

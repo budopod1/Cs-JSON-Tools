@@ -15,4 +15,8 @@ public class JSONList : Collection<IJSONValue>, IJSONValue {
     public string ToJSON() {
         return $"[{String.Join(", ", this.Select(item => item.ToJSON()))}]";
     }
+
+    public bool IsNull() {
+        return false;
+    }
 }

@@ -10,4 +10,8 @@ public class JSONObject : Dictionary<string, IJSONValue>, IJSONValue {
             JSONTools.ToLiteral(pair.Key) + ": " + pair.Value.ToJSON()
         )))+"}";
     }
+
+    public bool IsNull() {
+        return false;
+    }
 }

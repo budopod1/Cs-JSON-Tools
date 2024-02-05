@@ -4,4 +4,5 @@ public interface IJSONValue {
     JSONSpan span { get; set; }
     
     string ToJSON();
+    bool IsNull();
 }

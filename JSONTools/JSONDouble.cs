@@ -14,4 +14,8 @@ public class JSONDouble : IJSONValue {
     public string ToJSON() {
         return Value.HasValue ? Value.ToString() : "null";
     }
+
+    public bool IsNull() {
+        return Value == null;
+    }
 }

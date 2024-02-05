@@ -12,4 +12,8 @@ public class JSONBool : IJSONValue {
     public string ToJSON() {
         return Value.HasValue ? (Value.Value?"true":"false") : "null";
     }
+
+    public bool IsNull() {
+        return Value == null;
+    }
 }

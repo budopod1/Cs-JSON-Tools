@@ -266,7 +266,7 @@ public static class JSONTools {
                 $"Expected value, found EOF", new JSONSpan(i+1)
             );
         }
-        int start = i;
+        int start = valueStart-1;
         if (chr.Value == '"') {
             string str = ExpectString(text, i, out i);
             JSONString jstr = new JSONString(str);
@@ -370,11 +370,13 @@ public static class JSONTools {
         int showStart = Math.Max(Math.Min(start, text.Length-1)-showAroundErr, 0);
         int showEnd = Math.Min(end+showAroundErr, text.Length-1);
         for (int i = showStart; i <= showEnd; i++) {
+            if (text[i] == '\n') continue;
             Console.Write(text[i]);
         }
         Console.WriteLine();
         Console.ForegroundColor = ConsoleColor.Red;
         for (int i = showStart; i <= showEnd; i++) {
+            if (text[i] == '\n') continue;
             if (start <= i && i <= end) {
                 Console.Write('^');
             } else {

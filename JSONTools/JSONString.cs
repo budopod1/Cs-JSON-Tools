@@ -13,4 +13,8 @@ public class JSONString : IJSONValue {
     public string ToJSON() {
         return Value == null ? "null" : JSONTools.ToLiteral(Value);
     }
+
+    public bool IsNull() {
+        return Value == null;
+    }
 }
