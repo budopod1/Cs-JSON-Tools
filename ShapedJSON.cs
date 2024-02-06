@@ -70,4 +70,12 @@ public class ShapedJSON {
             )
         ));
     }
+
+    public int ListCount() {
+        return ((JSONList)val).Count;
+    }
+
+    public int ObjectCount() {
+        return ((JSONObject)val).Count;
+    }
 }
