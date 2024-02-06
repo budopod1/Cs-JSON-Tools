@@ -12,7 +12,7 @@ public class JSONListShape : IJSONListShape {
             foreach (IJSONValue subValue in ((JSONList)value)) {
                 sub.Verify(subValue);
             }
-        } else if (!(value is JSONNull)) {
+        } else {
             throw new InvalidJSONException("Expected list", value);
         }
     }

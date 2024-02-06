@@ -2,7 +2,7 @@ using System;
 
 public class JSONDoubleShape : IJSONShape {
     public void Verify(IJSONValue value) {
-        if (!(value is JSONInt || value is JSONDouble || value is JSONNull)) {
+        if (!(value is JSONInt || value is JSONDouble)) {
             throw new InvalidJSONException("Expected number", value);
         }
     }
