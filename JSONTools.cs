@@ -48,8 +48,8 @@ public static class JSONTools {
         return literal.ToString();
     }
 
-    public static string FromLiteral(string input) {
-        // not including quotes
+    public static string FromLiteral(string input, bool hasQuotes=false) {
+        if (hasQuotes) input = input.Substring(1, input.Length-2);
         StringBuilder result = new StringBuilder(input.Length);
         bool wasBackslash = false;
         for (int i = 0; i < input.Length; i++) {
