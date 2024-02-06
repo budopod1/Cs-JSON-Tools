@@ -78,4 +78,12 @@ public class ShapedJSON {
     public int ObjectCount() {
         return ((JSONObject)val).Count;
     }
+
+    public IJSONValue GetJSON() {
+        return val;
+    }
+
+    public IJSONShape GetShape() {
+        return shape;
+    }
 }
