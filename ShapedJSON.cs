@@ -53,6 +53,10 @@ public class ShapedJSON {
         return (JSONObject)val;
     }
 
+    public bool? GetBool() {
+        return ((JSONBool)val).Value;
+    }
+
     public ShapedJSON ToShape(IJSONShape newShape) {
         return new ShapedJSON(val, newShape);
     }
