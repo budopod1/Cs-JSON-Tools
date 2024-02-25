@@ -33,27 +33,33 @@ public class ShapedJSON {
     }
 
     public string GetString() {
+        if (val is JSONNull) return null;
         return ((JSONString)val).Value;
     }
 
     public double? GetDouble() {
+        if (val is JSONNull) return null;
         if (val is JSONInt) return ((JSONInt)val).Value;
         return ((JSONDouble)val).Value;
     }
 
     public int? GetInt() {
+        if (val is JSONNull) return null;
         return ((JSONInt)val).Value;
     }
 
     public JSONList GetList() {
+        if (val is JSONNull) return null;
         return (JSONList)val;
     }
 
     public JSONObject GetObject() {
+        if (val is JSONNull) return null;
         return (JSONObject)val;
     }
 
     public bool? GetBool() {
+        if (val is JSONNull) return null;
         return ((JSONBool)val).Value;
     }
 

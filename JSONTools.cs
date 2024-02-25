@@ -367,10 +367,18 @@ public static class JSONTools {
         Console.WriteLine(err.Message);
         int start = err.span.GetStart();
         int end = err.span.GetEnd();
+        int startLine = 0;
+        for (int i = 0; i < start; i++) {
+            if (text[i] == '\n') startLine++;
+        }
+        int endLine = startLine;
         int showStart = Math.Max(Math.Min(start, text.Length-1)-showAroundErr, 0);
         int showEnd = Math.Min(end+showAroundErr, text.Length-1);
         for (int i = showStart; i <= showEnd; i++) {
-            if (text[i] == '\n') continue;
+            if (text[i] == '\n') {
+                endLine++;
+                continue;
+            }
             Console.Write(text[i]);
         }
         Console.WriteLine();
@@ -385,6 +393,27 @@ public static class JSONTools {
         }
         if (end >= text.Length) {
             Console.Write("^");
+        }
+        Console.WriteLine();
+        Console.ForegroundColor = ConsoleColor.DarkRed;
+        Console.Write("Position ");
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.Write(start);
+        if (end != start) {
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.Write("-");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write(end);
+        }
+        Console.ForegroundColor = ConsoleColor.DarkRed;
+        Console.Write(startLine == endLine ? ", line " : ", lines ");
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.Write(startLine);
+        if (endLine != startLine) {
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.Write("-");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write(endLine);
         }
         Console.ResetColor();
         Console.WriteLine();
