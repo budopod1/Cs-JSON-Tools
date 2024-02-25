@@ -48,7 +48,7 @@ public static class JSONTools {
         return literal.ToString();
     }
 
-    public static string FromLiteral(string input, bool hasQuotes=false) {
+    public static string FromLiteral(string input, bool hasQuotes=true) {
         if (hasQuotes) input = input.Substring(1, input.Length-2);
         StringBuilder result = new StringBuilder(input.Length);
         bool wasBackslash = false;
@@ -203,7 +203,7 @@ public static class JSONTools {
             );
         }
         try {
-            return FromLiteral(content);
+            return FromLiteral(content, false);
         } catch (InvalidJSONException e) {
             e.span = e.span?.Shift(start);
             throw e;
