@@ -4,7 +4,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 public static class JSONTools {
-    static string ENList(IEnumerable<string> enumerable, string joiner="and") {
+    public static string ENList(IEnumerable<string> enumerable, string joiner="and") {
         List<string> list = enumerable.ToList();
         if (list.Count == 0) return "none";
         if (list.Count == 1) return list[0];
@@ -48,7 +48,37 @@ public static class JSONTools {
         return literal.ToString();
     }
 
+    public static string ToLiteralChar(char c) {
+        StringBuilder literal = new StringBuilder(3);
+        literal.Append("\"");
+        switch (c) {
+            case '\'': literal.Append("\\'"); break;
+            case '\\': literal.Append(@"\\"); break;
+            case '\0': literal.Append(@"\0"); break;
+            case '\a': literal.Append(@"\a"); break;
+            case '\b': literal.Append(@"\b"); break;
+            case '\f': literal.Append(@"\f"); break;
+            case '\n': literal.Append(@"\n"); break;
+            case '\r': literal.Append(@"\r"); break;
+            case '\t': literal.Append(@"\t"); break;
+            case '\v': literal.Append(@"\v"); break;
+            default:
+                // ASCII printable character
+                if (c >= 0x20 && c <= 0x7e) {
+                    literal.Append(c);
+                // As UTF16 escaped character
+                } else {
+                    literal.Append(@"\u");
+                    literal.Append(((int)c).ToString("x4"));
+                }
+                break;
+        }
+        literal.Append("\"");
+        return literal.ToString();
+    }
+
     public static string FromLiteral(string input, bool hasQuotes=true) {
+        // TODO: change function to not throw InvalidJSONException
         if (hasQuotes) input = input.Substring(1, input.Length-2);
         StringBuilder result = new StringBuilder(input.Length);
         bool wasBackslash = false;
@@ -84,7 +114,7 @@ public static class JSONTools {
                                 code += scale * (nibble - 'a' + 10);
                             } else {
                                 throw new InvalidJSONException(
-                                    $"Expected hex digit, found {nibble}", 
+                                    $"Expected hex digit, found {ToLiteralChar(nibble)}", 
                                     new JSONSpan(i+j+1)
                                 );
                             }
@@ -95,7 +125,7 @@ public static class JSONTools {
                         break;
                     default:
                         throw new InvalidJSONException(
-                            $"Invalid escape code, '\\{chr}'", new JSONSpan(i)
+                            $"Invalid escape code, '\\{ToLiteralChar(chr)}'", new JSONSpan(i)
                         );
                 }
                 wasBackslash = false;
@@ -109,6 +139,27 @@ public static class JSONTools {
         }
         return result.ToString();
     }
+    
+    public static char FromLiteralChar(string input, bool hasQuotes=true) {
+        int offset = hasQuotes ? 1 : 0;
+        if (input[offset] == '\\') {
+            switch (input[offset+1]) {
+                case '"': return '"';
+                case '\\': return '\\';
+                case '0': return '\0';
+                case 'a': return '\a';
+                case 'b': return '\b';
+                case 'f': return '\f';
+                case 'n': return '\n';
+                case 'r': return '\r';
+                case 't': return '\t';
+                case 'v': return '\v';
+                default: return input[offset+1];
+            }
+        } else {
+            return input[offset];
+        }
+    }
 
     public static char[] Whitespace = {' ', '\n', '\t'};
 
@@ -117,7 +168,7 @@ public static class JSONTools {
         while (true) {
             if (i >= text.Length) {
                 throw new InvalidJSONException(
-                    $"Expected '{next}', found EOF", new JSONSpan(i)
+                    $"Expected {ToLiteral(next)}, found EOF", new JSONSpan(i)
                 );
             }
             if (text.Substring(i).StartsWith(next)) {
@@ -126,7 +177,7 @@ public static class JSONTools {
             }
             if (!Whitespace.Contains(text[i])) {
                 throw new InvalidJSONException(
-                    $"Expected '{next}', found '{text[i]}'", new JSONSpan(i)
+                    $"Expected {ToLiteral(next)}, found {ToLiteralChar(text[i])}'", new JSONSpan(i)
                 );
             }
             i++;
@@ -135,7 +186,7 @@ public static class JSONTools {
 
     static string ExpectAny(string text, string[] nexts, int i_, out int i) {
         i = i_;
-        string expected = ENList(nexts.Select(next=>$"'{next}'"), "or");
+        string expected = ENList(nexts.Select(next=>ToLiteral(next)), "or");
         while (true) {
             if (i >= text.Length) {
                 throw new InvalidJSONException(
@@ -150,7 +201,7 @@ public static class JSONTools {
             }
             if (!Whitespace.Contains(text[i])) {
                 throw new InvalidJSONException(
-                    $"Expected {expected}, found '{text[i]}'", new JSONSpan(i)
+                    $"Expected {expected}, found {ToLiteralChar(text[i])}", new JSONSpan(i)
                 );
             }
             i++;
@@ -230,7 +281,7 @@ public static class JSONTools {
             if (!numberChars.Contains(chr)) {
                 if (isStart) {
                     throw new InvalidJSONException(
-                        $"Expected number, found '{chr}'", new JSONSpan(i)
+                        $"Expected number, found {ToLiteralChar(chr)}", new JSONSpan(i)
                     );
                 }
                 break;
@@ -348,7 +399,7 @@ public static class JSONTools {
             return value;
         } else {
             throw new InvalidJSONException(
-                $"Expected value, found '{chr.Value}'", new JSONSpan(i)
+                $"Expected value, found {ToLiteralChar(chr.Value)}", new JSONSpan(i)
             );
         }
     }
@@ -367,18 +418,18 @@ public static class JSONTools {
         Console.WriteLine(err.Message);
         int start = err.span.GetStart();
         int end = err.span.GetEnd();
-        int startLine = 0;
+        int startLine = 1;
         for (int i = 0; i < start; i++) {
             if (text[i] == '\n') startLine++;
         }
         int endLine = startLine;
+        for (int i = start; i <= end; i++) {
+            if (text[i] == '\n') endLine++;
+        }
         int showStart = Math.Max(Math.Min(start, text.Length-1)-showAroundErr, 0);
         int showEnd = Math.Min(end+showAroundErr, text.Length-1);
         for (int i = showStart; i <= showEnd; i++) {
-            if (text[i] == '\n') {
-                endLine++;
-                continue;
-            }
+            if (text[i] == '\n') continue;
             Console.Write(text[i]);
         }
         Console.WriteLine();
