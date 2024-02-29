@@ -98,9 +98,8 @@ public static class JSONTools {
                     case 'v': result.Append('\v'); break;
                     case 'u':
                         if (i + 4 >= input.Length) {
-                            throw new InvalidJSONException(
-                                "Expected unicode code after '\\u', found EOF", 
-                                new JSONSpan(i)
+                            throw new LiteralDecodeException(
+                                "Expected unicode code after '\\u', found EOF", i
                             );
                         }
                         string hex = input.Substring(i+1, 4);
@@ -113,9 +112,9 @@ public static class JSONTools {
                             } else if ('a' <= nibble && nibble <= 'f') {
                                 code += scale * (nibble - 'a' + 10);
                             } else {
-                                throw new InvalidJSONException(
+                                throw new LiteralDecodeException(
                                     $"Expected hex digit, found {ToLiteralChar(nibble)}", 
-                                    new JSONSpan(i+j+1)
+                                    i+j+1
                                 );
                             }
                             scale *= 16;
@@ -124,8 +123,8 @@ public static class JSONTools {
                         i += 4;
                         break;
                     default:
-                        throw new InvalidJSONException(
-                            $"Invalid escape code, '\\{ToLiteralChar(chr)}'", new JSONSpan(i)
+                        throw new LiteralDecodeException(
+                            $"Invalid escape code, '\\{ToLiteralChar(chr)}'", i
                         );
                 }
                 wasBackslash = false;
@@ -255,9 +254,10 @@ public static class JSONTools {
         }
         try {
             return FromLiteral(content, false);
-        } catch (InvalidJSONException e) {
-            e.span = e.span?.Shift(start);
-            throw e;
+        } catch (LiteralDecodeException e) {
+            throw new InvalidJSONException(
+                e.Message, new JSONSpan(e.Position+start)
+            );
         }
     }
 
