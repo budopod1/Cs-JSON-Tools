@@ -305,11 +305,23 @@ public static class JSONTools {
         }
     }
 
-    public static IJSONValue ParseJSON(string text) {
-        return ParseJSON(text, 0, out int i);
+    static void ExpectEOF(string text, int i_, out int i) {
+        for (i = i_; i < text.Length; i++) {
+            if (!Whitespace.Contains(text[i])) {
+                throw new InvalidJSONException(
+                    $"Expected EOF, found {ToLiteralChar(text[i])}", new JSONSpan(i)
+                );
+            }
+        }
     }
 
-    static IJSONValue ParseJSON(string text, int i_, out int i) {
+    public static IJSONValue ParseJSON(string text) {
+        IJSONValue result = ExpectJSON(text, 0, out int i);
+        ExpectEOF(text, i, out i);
+        return result;
+    }
+
+    static IJSONValue ExpectJSON(string text, int i_, out int i) {
         i = i_;
         char? chr = NextChar(text, i, out int valueStart);
         if (chr == null) {
@@ -318,21 +330,19 @@ public static class JSONTools {
             );
         }
         int start = valueStart-1;
+        IJSONValue result;
         if (chr.Value == '"') {
             string str = ExpectString(text, i, out i);
-            JSONString jstr = new JSONString(str);
-            jstr.span = new JSONSpan(start, i-1);
-            return jstr;
+            result = new JSONString(str);
+            result.span = new JSONSpan(start, i-1);
         } else if (chr.Value == '-' || ('0' <= chr.Value && chr.Value <= '9')) {
             NumUnion num = ExpectNumber(text, i, out i);
-            IJSONValue value;
             if (num.HasInt()) {
-                value = new JSONInt(num.GetInt());
+                result = new JSONInt(num.GetInt());
             } else {
-                value = new JSONDouble(num.GetDouble());
+                result = new JSONDouble(num.GetDouble());
             }
-            value.span = new JSONSpan(start, i-1);
-            return value;
+            result.span = new JSONSpan(start, i-1);
         } else if (chr.Value == '{') {
             i = valueStart;
             chr = Peek(text, i);
@@ -349,7 +359,7 @@ public static class JSONTools {
                 do {
                     string key = ExpectString(text, i, out i);
                     Expect(text, ":", i, out i);
-                    IJSONValue value = ParseJSON(text, i, out i);
+                    IJSONValue value = ExpectJSON(text, i, out i);
                     obj[key] = value;
                     sep = ExpectAny(
                         text, new string[] {",", "}"}, i, out i
@@ -357,7 +367,7 @@ public static class JSONTools {
                 } while (sep != "}");
             }
             obj.span = new JSONSpan(start, i-1);
-            return obj;
+            result = obj;
         } else if (chr.Value == '[') {
             i = valueStart;
             chr = Peek(text, i);
@@ -372,7 +382,7 @@ public static class JSONTools {
             } else {
                 string sep = null;
                 do {
-                    IJSONValue value = ParseJSON(text, i, out i);
+                    IJSONValue value = ExpectJSON(text, i, out i);
                     list.Add(value);
                     sep = ExpectAny(
                         text, new string[] {",", "]"}, i, out i
@@ -380,28 +390,27 @@ public static class JSONTools {
                 } while (sep != "]");
             }
             list.span = new JSONSpan(start, i-1);
-            return list;
+            result = list;
         } else if ('A' <= chr.Value && chr.Value <= 'z') {
             string found = ExpectAny(
                 text, new string[] {"true", "false", "null"}, i, out i
             );
-            IJSONValue value;
             if (found == "true") {
-                value = new JSONBool(true);
+                result = new JSONBool(true);
             } else if (found == "false") {
-                value = new JSONBool(false);
+                result = new JSONBool(false);
             } else if (found == "null") {
-                value = new JSONNull();
+                result = new JSONNull();
             } else {
                 throw new InvalidOperationException();
             }
-            value.span = new JSONSpan(start, i-1);
-            return value;
+            result.span = new JSONSpan(start, i-1);
         } else {
             throw new InvalidJSONException(
                 $"Expected value, found {ToLiteralChar(chr.Value)}", new JSONSpan(i)
             );
         }
+        return result;
     }
 
     public static void ShowError(string text, InvalidJSONException err, string file=null, int showAroundErr=5) {
@@ -418,6 +427,8 @@ public static class JSONTools {
         Console.WriteLine(err.Message);
         int start = err.span.GetStart();
         int end = err.span.GetEnd();
+        bool endOverflow = end >= text.Length;
+        if (endOverflow) end = text.Length-1;
         int startLine = 1;
         for (int i = 0; i < start; i++) {
             if (text[i] == '\n') startLine++;
@@ -442,7 +453,7 @@ public static class JSONTools {
                 Console.Write(' ');
             }
         }
-        if (end >= text.Length) {
+        if (endOverflow) {
             Console.Write("^");
         }
         Console.WriteLine();
