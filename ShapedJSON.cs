@@ -48,6 +48,10 @@ public class ShapedJSON {
         return ((JSONInt)val).Value;
     }
 
+    public int? GetWhole() {
+        return GetInt();
+    }
+
     public JSONList GetList() {
         if (val is JSONNull) return null;
         return (JSONList)val;

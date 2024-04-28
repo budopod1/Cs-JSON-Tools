@@ -458,14 +458,14 @@ public static class JSONTools {
         }
         Console.WriteLine();
         Console.ForegroundColor = ConsoleColor.DarkRed;
-        Console.Write("Position ");
+        Console.Write($"Position ");
         Console.ForegroundColor = ConsoleColor.Cyan;
-        Console.Write(start);
+        Console.Write(start+1);
         if (end != start) {
             Console.ForegroundColor = ConsoleColor.DarkRed;
             Console.Write("-");
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.Write(end);
+            Console.Write(end+1);
         }
         Console.ForegroundColor = ConsoleColor.DarkRed;
         Console.Write(startLine == endLine ? ", line " : ", lines ");
