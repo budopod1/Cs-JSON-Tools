@@ -1,8 +1,9 @@
 using System;
-using System.Linq;
+using System.Collections.Generic;
 
 public class JSONString : IJSONValue {
     public JSONSpan span { get; set; }
+    public IEnumerable<byte> ID => new List<byte> {7};
     
     public string Value;
 
@@ -11,10 +12,14 @@ public class JSONString : IJSONValue {
     }
 
     public string ToJSON() {
-        return Value == null ? "null" : JSONTools.ToLiteral(Value);
+        return JSONTools.ToLiteral(Value);
     }
 
-    public bool IsNull() {
-        return Value == null;
+    public IEnumerable<byte> ToBJSON(BJSONEnv env) {
+        return env.RegisterString(Value);
+    }
+
+    public static IJSONValue OrNull(string str) {
+        return str != null ? new JSONString(str) : (IJSONValue)new JSONNull();
     }
 }

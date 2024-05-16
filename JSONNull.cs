@@ -4,12 +4,13 @@ using System.Collections.Generic;
 
 public class JSONNull : IJSONValue {
     public JSONSpan span { get; set; }
+    public IEnumerable<byte> ID => new List<byte> {5};
     
     public string ToJSON() {
         return "null";
     }
 
-    public bool IsNull() {
-        return true;
+    public IEnumerable<byte> ToBJSON(BJSONEnv env) {
+        return new List<byte>();
     }
 }

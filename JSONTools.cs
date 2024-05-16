@@ -425,7 +425,10 @@ public static class JSONTools {
         Console.Write(": ");
         Console.ResetColor();
         Console.WriteLine(err.Message);
-        int start = err.span.GetStart();
+        
+        if (err.span == null || text == null) return;
+        
+        int start = Math.Min(err.span.GetStart(), text.Length);
         int end = err.span.GetEnd();
         bool endOverflow = end >= text.Length;
         if (endOverflow) end = text.Length-1;
@@ -444,6 +447,7 @@ public static class JSONTools {
             Console.Write(text[i]);
         }
         Console.WriteLine();
+        
         Console.ForegroundColor = ConsoleColor.Red;
         for (int i = showStart; i <= showEnd; i++) {
             if (text[i] == '\n') continue;
@@ -457,6 +461,7 @@ public static class JSONTools {
             Console.Write("^");
         }
         Console.WriteLine();
+        
         Console.ForegroundColor = ConsoleColor.DarkRed;
         Console.Write($"Position ");
         Console.ForegroundColor = ConsoleColor.Cyan;

@@ -4,18 +4,23 @@ using System.Collections.Generic;
 
 public class JSONInt : IJSONValue {
     public JSONSpan span { get; set; }
+    public IEnumerable<byte> ID => new List<byte> {3};
     
-    public int? Value;
+    public int Value;
 
-    public JSONInt(int? value) {
+    public JSONInt(int value) {
         Value = value;
     }
 
     public string ToJSON() {
-        return Value.HasValue ? Value.ToString() : "null";
+        return Value.ToString();
     }
 
-    public bool IsNull() {
-        return Value == null;
+    public IEnumerable<byte> ToBJSON(BJSONEnv env) {
+        return BJSONEnv.ToVWInt(Value);
+    }
+
+    public static IJSONValue OrNull(int? num) {
+        return num.HasValue ? new JSONInt(num.Value) : (IJSONValue)new JSONNull();
     }
 }

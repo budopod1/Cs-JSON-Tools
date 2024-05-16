@@ -33,38 +33,60 @@ public class ShapedJSON {
     }
 
     public string GetString() {
+        return ((JSONString)val).Value;
+    }
+
+    public string GetStringOrNull() {
         if (val is JSONNull) return null;
         return ((JSONString)val).Value;
     }
 
-    public double? GetDouble() {
-        if (val is JSONNull) return null;
+    public double GetDouble() {
         if (val is JSONInt) return ((JSONInt)val).Value;
         return ((JSONDouble)val).Value;
     }
 
-    public int? GetInt() {
+    public double? GetDoubleOrNull() {
+        if (val is JSONNull) return null;
+        return ((JSONDouble)val).Value;
+    }
+
+    public int GetInt() {
+        return ((JSONInt)val).Value;
+    }
+
+    public int? GetIntOrNull() {
         if (val is JSONNull) return null;
         return ((JSONInt)val).Value;
     }
 
-    public int? GetWhole() {
+    public int GetWhole() {
         return GetInt();
     }
 
+    public int? GetWholeOrNull() {
+        return GetIntOrNull();
+    }
+
     public JSONList GetList() {
-        if (val is JSONNull) return null;
         return (JSONList)val;
     }
 
     public JSONObject GetObject() {
-        if (val is JSONNull) return null;
         return (JSONObject)val;
     }
 
-    public bool? GetBool() {
+    public bool GetBool() {
+        return ((JSONBool)val).Value;
+    }
+
+    public bool? GetBoolOrNull() {
         if (val is JSONNull) return null;
         return ((JSONBool)val).Value;
+    }
+
+    public bool IsNull() {
+        return val is JSONNull;
     }
 
     public ShapedJSON ToShape(IJSONShape newShape) {

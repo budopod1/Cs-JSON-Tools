@@ -8,7 +8,7 @@ public class JSONNullableShape : IJSONListShape, IJSONObjectShape {
     }
 
     public void Verify(IJSONValue value) {
-        if (value.IsNull()) return;
+        if (value is JSONNull) return;
         norm.Verify(value);
     }
 
