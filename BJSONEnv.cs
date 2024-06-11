@@ -109,6 +109,16 @@ public class BJSONEnv {
         return result;
     }
 
+    public JSONList ReadBJSONMultitypedList(BinaryReader bytes) {
+        JSONList result = new JSONList();
+        int count = FromVWInt(bytes);
+        for (int i = 0; i < count; i++) {
+            byte ID = ReadByte(bytes);
+            result.Add(ReadBJSONValue(ID, bytes));
+        }
+        return result;
+    }
+
     public JSONObject ReadBJSONObject(BinaryReader bytes) {
         JSONObject result = new JSONObject();
         int count = FromVWInt(bytes);
@@ -141,6 +151,8 @@ public class BJSONEnv {
                 return ReadBJSONObject(bytes);
             case 7:
                 return ReadBJSONString(bytes);
+            case 8:
+                return ReadBJSONMultitypedList(bytes);
             default:
                 throw new InvalidBJSONException($"{ID} is not a valid BJSON type ID");
         }
