@@ -78,7 +78,6 @@ public static class JSONTools {
     }
 
     public static string FromLiteral(string input, bool hasQuotes=true) {
-        // TODO: change function to not throw InvalidJSONException
         if (hasQuotes) input = input.Substring(1, input.Length-2);
         StringBuilder result = new StringBuilder(input.Length);
         bool wasBackslash = false;
