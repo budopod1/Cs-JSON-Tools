@@ -11,7 +11,7 @@ public class JSONBool : IJSONValue {
         Value = value;
     }
 
-    public string ToJSON() {
+    public string Stringify() {
         return Value ? "true" : "false";
     }
 

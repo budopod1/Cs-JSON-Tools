@@ -13,8 +13,8 @@ public class JSONList : Collection<IJSONValue>, IJSONValue {
 
     public JSONList() {}
 
-    public string ToJSON() {
-        return $"[{String.Join(", ", this.Select(item => item.ToJSON()))}]";
+    public string Stringify() {
+        return $"[{String.Join(", ", this.Select(item => item.Stringify()))}]";
     }
 
     public bool IsUnitype() {

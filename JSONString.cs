@@ -11,7 +11,7 @@ public class JSONString : IJSONValue {
         Value = value;
     }
 
-    public string ToJSON() {
+    public string Stringify() {
         return JSONTools.ToLiteral(Value);
     }
 

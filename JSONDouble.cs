@@ -12,7 +12,7 @@ public class JSONDouble : IJSONValue {
         Value = value;
     }
 
-    public string ToJSON() {
+    public string Stringify() {
         return Value.ToString();
     }
 

@@ -5,6 +5,6 @@ public interface IJSONValue {
     IEnumerable<byte> ID { get; }
     JSONSpan span { get; set; }
     
-    string ToJSON();
+    string Stringify();
     IEnumerable<byte> ToBJSON(BJSONEnv env);
 }
