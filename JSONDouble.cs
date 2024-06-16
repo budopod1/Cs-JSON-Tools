@@ -16,6 +16,10 @@ public class JSONDouble : IJSONValue {
         return Value.ToString();
     }
 
+    public string PrettyPrint(PrettyPrintConfig config) {
+        return Stringify();
+    }
+
     public IEnumerable<byte> ToBJSON(BJSONEnv env) {
         byte[] bytes = BitConverter.GetBytes(Value);
         if (BitConverter.IsLittleEndian)

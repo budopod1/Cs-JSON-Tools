@@ -15,6 +15,10 @@ public class JSONString : IJSONValue {
         return JSONTools.ToLiteral(Value);
     }
 
+    public string PrettyPrint(PrettyPrintConfig config) {
+        return Stringify();
+    }
+
     public IEnumerable<byte> ToBJSON(BJSONEnv env) {
         return env.RegisterString(Value);
     }

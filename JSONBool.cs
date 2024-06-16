@@ -15,6 +15,10 @@ public class JSONBool : IJSONValue {
         return Value ? "true" : "false";
     }
 
+    public string PrettyPrint(PrettyPrintConfig config) {
+        return Stringify();
+    }
+
     public IEnumerable<byte> ToBJSON(BJSONEnv env) {
         return new List<byte> {Value ? (byte)0x01 : (byte)0x00};
     }

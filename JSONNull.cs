@@ -10,6 +10,10 @@ public class JSONNull : IJSONValue {
         return "null";
     }
 
+    public string PrettyPrint(PrettyPrintConfig config) {
+        return Stringify();
+    }
+
     public IEnumerable<byte> ToBJSON(BJSONEnv env) {
         return new List<byte>();
     }

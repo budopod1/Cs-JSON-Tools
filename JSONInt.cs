@@ -16,6 +16,10 @@ public class JSONInt : IJSONValue {
         return Value.ToString();
     }
 
+    public string PrettyPrint(PrettyPrintConfig config) {
+        return Stringify();
+    }
+
     public IEnumerable<byte> ToBJSON(BJSONEnv env) {
         return BJSONEnv.ToVWInt(Value);
     }

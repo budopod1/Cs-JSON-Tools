@@ -17,6 +17,17 @@ public class JSONList : Collection<IJSONValue>, IJSONValue {
         return $"[{String.Join(", ", this.Select(item => item.Stringify()))}]";
     }
 
+    public string PrettyPrint(PrettyPrintConfig config) {
+        IEnumerable<string> stringifiedParts = this.Select(item => item.PrettyPrint(config));
+        if (stringifiedParts.Any(part => part.IndexOf('\n') == -1)) {
+            string basicStringification = $"[{String.Join(", ", stringifiedParts)}]";
+            if (basicStringification.Length < config.MaxLineContentLen) {
+                return basicStringification;
+            }
+        }
+        return $"[\n{config.Indent(String.Join(",\n", stringifiedParts))}\n]";
+    }
+
     public bool IsUnitype() {
         if (Count == 0) return true;
         byte firstID = this[0].ID.First();

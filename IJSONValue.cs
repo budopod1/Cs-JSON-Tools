@@ -6,5 +6,6 @@ public interface IJSONValue {
     JSONSpan span { get; set; }
     
     string Stringify();
+    string PrettyPrint(PrettyPrintConfig config);
     IEnumerable<byte> ToBJSON(BJSONEnv env);
 }

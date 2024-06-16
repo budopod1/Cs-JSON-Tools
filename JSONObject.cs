@@ -12,6 +12,19 @@ public class JSONObject : Dictionary<string, IJSONValue>, IJSONValue {
         )))+"}";
     }
 
+    public string PrettyPrint(PrettyPrintConfig config) {
+        IEnumerable<string> stringifiedParts = this.Select(pair => (
+            JSONTools.ToLiteral(pair.Key) + ": " + pair.Value.PrettyPrint(config)
+        ));
+        if (stringifiedParts.Any(part => part.IndexOf('\n') == -1)) {
+            string basicStringification = "{"+String.Join(", ", stringifiedParts)+"}";
+            if (basicStringification.Length < config.MaxLineContentLen) {
+                return basicStringification;
+            }
+        }
+        return "{\n"+config.Indent(String.Join(",\n", stringifiedParts))+"\n}";
+    }
+
     public IEnumerable<byte> ToBJSON(BJSONEnv env) {
         IEnumerable<byte> result = BJSONEnv.ToVWInt(Count);
         foreach (KeyValuePair<string, IJSONValue> pair in this) {
