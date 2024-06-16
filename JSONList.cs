@@ -19,7 +19,7 @@ public class JSONList : Collection<IJSONValue>, IJSONValue {
 
     public string PrettyPrint(PrettyPrintConfig config) {
         IEnumerable<string> stringifiedParts = this.Select(item => item.PrettyPrint(config));
-        if (stringifiedParts.Any(part => part.IndexOf('\n') == -1)) {
+        if (stringifiedParts.All(part => part.IndexOf('\n') == -1)) {
             string basicStringification = $"[{String.Join(", ", stringifiedParts)}]";
             if (basicStringification.Length < config.MaxLineContentLen) {
                 return basicStringification;

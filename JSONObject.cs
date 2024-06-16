@@ -16,7 +16,7 @@ public class JSONObject : Dictionary<string, IJSONValue>, IJSONValue {
         IEnumerable<string> stringifiedParts = this.Select(pair => (
             JSONTools.ToLiteral(pair.Key) + ": " + pair.Value.PrettyPrint(config)
         ));
-        if (stringifiedParts.Any(part => part.IndexOf('\n') == -1)) {
+        if (stringifiedParts.All(part => part.IndexOf('\n') == -1)) {
             string basicStringification = "{"+String.Join(", ", stringifiedParts)+"}";
             if (basicStringification.Length < config.MaxLineContentLen) {
                 return basicStringification;
