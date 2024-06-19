@@ -33,11 +33,11 @@ public class BJSONEnv {
     }
 
     public static byte ReadByte(BinaryReader bytes) {
-        int result = bytes.Read();
-        if (result == -1) {
+        try {
+            return bytes.ReadByte();
+        } catch (EndOfStreamException) {
             throw new InvalidBJSONException("Expected additional byte, found EOF");
         }
-        return (byte)result;
     }
 
     public static byte[] ReadN(BinaryReader bytes, int n) {
