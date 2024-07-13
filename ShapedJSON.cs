@@ -60,14 +60,6 @@ public class ShapedJSON {
         return ((JSONInt)val).Value;
     }
 
-    public int GetWhole() {
-        return GetInt();
-    }
-
-    public int? GetWholeOrNull() {
-        return GetIntOrNull();
-    }
-
     public JSONList GetList() {
         return (JSONList)val;
     }
