@@ -252,7 +252,7 @@ public static class JSONTools {
             );
         }
         try {
-            return FromLiteral(content, false);
+            return FromLiteral(content, hasQuotes: false);
         } catch (LiteralDecodeException e) {
             throw new InvalidJSONException(
                 e.Message, new JSONSpan(e.Position+start)
