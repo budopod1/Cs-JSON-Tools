@@ -22,37 +22,7 @@ public static class JSONTools {
         literal.Append("\"");
         foreach (var c in input) {
             switch (c) {
-                case '\"': literal.Append("\\\""); break;
-                case '\\': literal.Append(@"\\"); break;
-                case '\0': literal.Append(@"\0"); break;
-                case '\a': literal.Append(@"\a"); break;
-                case '\b': literal.Append(@"\b"); break;
-                case '\f': literal.Append(@"\f"); break;
-                case '\n': literal.Append(@"\n"); break;
-                case '\r': literal.Append(@"\r"); break;
-                case '\t': literal.Append(@"\t"); break;
-                case '\v': literal.Append(@"\v"); break;
-                default:
-                    // ASCII printable character
-                    if (c >= 0x20 && c <= 0x7e) {
-                        literal.Append(c);
-                    // As UTF16 escaped character
-                    } else {
-                        literal.Append(@"\u");
-                        literal.Append(((int)c).ToString("x4"));
-                    }
-                    break;
-            }
-        }
-        literal.Append("\"");
-        return literal.ToString();
-    }
-
-    public static string ToLiteralChar(char c) {
-        StringBuilder literal = new StringBuilder(3);
-        literal.Append("\"");
-        switch (c) {
-            case '\'': literal.Append("\\'"); break;
+            case '\"': literal.Append("\\\""); break;
             case '\\': literal.Append(@"\\"); break;
             case '\0': literal.Append(@"\0"); break;
             case '\a': literal.Append(@"\a"); break;
@@ -72,6 +42,36 @@ public static class JSONTools {
                     literal.Append(((int)c).ToString("x4"));
                 }
                 break;
+            }
+        }
+        literal.Append("\"");
+        return literal.ToString();
+    }
+
+    public static string ToLiteralChar(char c) {
+        StringBuilder literal = new StringBuilder(3);
+        literal.Append("\"");
+        switch (c) {
+        case '\'': literal.Append("\\'"); break;
+        case '\\': literal.Append(@"\\"); break;
+        case '\0': literal.Append(@"\0"); break;
+        case '\a': literal.Append(@"\a"); break;
+        case '\b': literal.Append(@"\b"); break;
+        case '\f': literal.Append(@"\f"); break;
+        case '\n': literal.Append(@"\n"); break;
+        case '\r': literal.Append(@"\r"); break;
+        case '\t': literal.Append(@"\t"); break;
+        case '\v': literal.Append(@"\v"); break;
+        default:
+            // ASCII printable character
+            if (c >= 0x20 && c <= 0x7e) {
+                literal.Append(c);
+            // As UTF16 escaped character
+            } else {
+                literal.Append(@"\u");
+                literal.Append(((int)c).ToString("x4"));
+            }
+            break;
         }
         literal.Append("\"");
         return literal.ToString();
@@ -85,46 +85,46 @@ public static class JSONTools {
             char chr = input[i];
             if (wasBackslash) {
                 switch (chr) {
-                    case '"': result.Append('"'); break;
-                    case '\\': result.Append('\\'); break;
-                    case '0': result.Append('\0'); break;
-                    case 'a': result.Append('\a'); break;
-                    case 'b': result.Append('\b'); break;
-                    case 'f': result.Append('\f'); break;
-                    case 'n': result.Append('\n'); break;
-                    case 'r': result.Append('\r'); break;
-                    case 't': result.Append('\t'); break;
-                    case 'v': result.Append('\v'); break;
-                    case 'u':
-                        if (i + 4 >= input.Length) {
+                case '"': result.Append('"'); break;
+                case '\\': result.Append('\\'); break;
+                case '0': result.Append('\0'); break;
+                case 'a': result.Append('\a'); break;
+                case 'b': result.Append('\b'); break;
+                case 'f': result.Append('\f'); break;
+                case 'n': result.Append('\n'); break;
+                case 'r': result.Append('\r'); break;
+                case 't': result.Append('\t'); break;
+                case 'v': result.Append('\v'); break;
+                case 'u':
+                    if (i + 4 >= input.Length) {
+                        throw new LiteralDecodeException(
+                            "Expected unicode code after '\\u', found EOF", i
+                        );
+                    }
+                    string hex = input.Substring(i+1, 4);
+                    int code = 0;
+                    int scale = 1;
+                    for (int j = 3; j >= 0; j--) {
+                        char nibble = Char.ToLower(hex[j]);
+                        if ('0' <= nibble && nibble <= '9') {
+                            code += scale * (nibble - '0');
+                        } else if ('a' <= nibble && nibble <= 'f') {
+                            code += scale * (nibble - 'a' + 10);
+                        } else {
                             throw new LiteralDecodeException(
-                                "Expected unicode code after '\\u', found EOF", i
+                                $"Expected hex digit, found {ToLiteralChar(nibble)}", 
+                                i+j+1
                             );
                         }
-                        string hex = input.Substring(i+1, 4);
-                        int code = 0;
-                        int scale = 1;
-                        for (int j = 3; j >= 0; j--) {
-                            char nibble = Char.ToLower(hex[j]);
-                            if ('0' <= nibble && nibble <= '9') {
-                                code += scale * (nibble - '0');
-                            } else if ('a' <= nibble && nibble <= 'f') {
-                                code += scale * (nibble - 'a' + 10);
-                            } else {
-                                throw new LiteralDecodeException(
-                                    $"Expected hex digit, found {ToLiteralChar(nibble)}", 
-                                    i+j+1
-                                );
-                            }
-                            scale *= 16;
-                        }
-                        result.Append((char)code);
-                        i += 4;
-                        break;
-                    default:
-                        throw new LiteralDecodeException(
-                            $"Invalid escape code, '\\{ToLiteralChar(chr)}'", i
-                        );
+                        scale *= 16;
+                    }
+                    result.Append((char)code);
+                    i += 4;
+                    break;
+                default:
+                    throw new LiteralDecodeException(
+                        $"Invalid escape code, '\\{ToLiteralChar(chr)}'", i
+                    );
                 }
                 wasBackslash = false;
             } else {
@@ -142,17 +142,17 @@ public static class JSONTools {
         int offset = hasQuotes ? 1 : 0;
         if (input[offset] == '\\') {
             switch (input[offset+1]) {
-                case '"': return '"';
-                case '\\': return '\\';
-                case '0': return '\0';
-                case 'a': return '\a';
-                case 'b': return '\b';
-                case 'f': return '\f';
-                case 'n': return '\n';
-                case 'r': return '\r';
-                case 't': return '\t';
-                case 'v': return '\v';
-                default: return input[offset+1];
+            case '"': return '"';
+            case '\\': return '\\';
+            case '0': return '\0';
+            case 'a': return '\a';
+            case 'b': return '\b';
+            case 'f': return '\f';
+            case 'n': return '\n';
+            case 'r': return '\r';
+            case 't': return '\t';
+            case 'v': return '\v';
+            default: return input[offset+1];
             }
         } else {
             return input[offset];

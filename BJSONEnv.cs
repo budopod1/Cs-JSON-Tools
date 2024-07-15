@@ -137,24 +137,24 @@ public class BJSONEnv {
 
     public IJSONValue ReadBJSONValue(byte ID, BinaryReader bytes) {
         switch (ID) {
-            case 1:
-                return ReadBJSONBool(bytes);
-            case 2:
-                return ReadBJSONDouble(bytes);
-            case 3:
-                return ReadBJSONInt(bytes);
-            case 4:
-                return ReadBJSONList(bytes);
-            case 5:
-                return new JSONNull();
-            case 6:
-                return ReadBJSONObject(bytes);
-            case 7:
-                return ReadBJSONString(bytes);
-            case 8:
-                return ReadBJSONMultitypedList(bytes);
-            default:
-                throw new InvalidBJSONException($"{ID} is not a valid BJSON type ID");
+        case 1:
+            return ReadBJSONBool(bytes);
+        case 2:
+            return ReadBJSONDouble(bytes);
+        case 3:
+            return ReadBJSONInt(bytes);
+        case 4:
+            return ReadBJSONList(bytes);
+        case 5:
+            return new JSONNull();
+        case 6:
+            return ReadBJSONObject(bytes);
+        case 7:
+            return ReadBJSONString(bytes);
+        case 8:
+            return ReadBJSONMultitypedList(bytes);
+        default:
+            throw new InvalidBJSONException($"{ID} is not a valid BJSON type ID");
         }
     }
 
