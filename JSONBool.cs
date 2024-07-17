@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public class JSONBool : IJSONValue {
     public JSONSpan span { get; set; }
     public IEnumerable<byte> ID => new List<byte> {1};
-    
+
     public bool Value;
 
     public JSONBool(bool value) {

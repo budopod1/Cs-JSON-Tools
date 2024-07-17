@@ -3,7 +3,7 @@ using System;
 public class NumUnion {
     int? i = null;
     double? d = null;
-    
+
     public NumUnion(int? num) {
         i = num;
     }

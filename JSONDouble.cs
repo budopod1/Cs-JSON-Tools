@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class JSONDouble : IJSONValue {
     public JSONSpan span { get; set; }
     public IEnumerable<byte> ID => new List<byte> {2};
-    
+
     public double Value;
 
     public JSONDouble(double value) {

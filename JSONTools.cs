@@ -112,7 +112,7 @@ public static class JSONTools {
                             code += scale * (nibble - 'a' + 10);
                         } else {
                             throw new LiteralDecodeException(
-                                $"Expected hex digit, found {ToLiteralChar(nibble)}", 
+                                $"Expected hex digit, found {ToLiteralChar(nibble)}",
                                 i+j+1
                             );
                         }
@@ -137,7 +137,7 @@ public static class JSONTools {
         }
         return result.ToString();
     }
-    
+
     public static char FromLiteralChar(string input, bool hasQuotes=true) {
         int offset = hasQuotes ? 1 : 0;
         if (input[offset] == '\\') {
@@ -424,9 +424,9 @@ public static class JSONTools {
         Console.Write(": ");
         Console.ResetColor();
         Console.WriteLine(err.Message);
-        
+
         if (err.span == null || text == null) return;
-        
+
         int start = Math.Min(err.span.GetStart(), text.Length);
         int end = err.span.GetEnd();
         bool endOverflow = end >= text.Length;
@@ -446,7 +446,7 @@ public static class JSONTools {
             Console.Write(text[i]);
         }
         Console.WriteLine();
-        
+
         Console.ForegroundColor = ConsoleColor.Red;
         for (int i = showStart; i <= showEnd; i++) {
             if (text[i] == '\n') continue;
@@ -460,7 +460,7 @@ public static class JSONTools {
             Console.Write("^");
         }
         Console.WriteLine();
-        
+
         Console.ForegroundColor = ConsoleColor.DarkRed;
         Console.Write($"Position ");
         Console.ForegroundColor = ConsoleColor.Cyan;

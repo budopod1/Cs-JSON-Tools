@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 public class JSONList : Collection<IJSONValue>, IJSONValue {
     public JSONSpan span { get; set; }
     public IEnumerable<byte> ID => new List<byte> {IsUnitype() ? (byte)4 : (byte)8};
-    
+
     public JSONList(IEnumerable<IJSONValue> values) {
         foreach (IJSONValue value in values) Add(value);
     }

@@ -8,7 +8,7 @@ public class BJSONEnv {
     List<string> strings = new List<string>();
 
     private BJSONEnv() {}
-    
+
     public static IEnumerable<byte> ToVWInt(int val) {
         List<byte> bytes = new List<byte>();
         do {

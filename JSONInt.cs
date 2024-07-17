@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class JSONInt : IJSONValue {
     public JSONSpan span { get; set; }
     public IEnumerable<byte> ID => new List<byte> {3};
-    
+
     public int Value;
 
     public JSONInt(int value) {

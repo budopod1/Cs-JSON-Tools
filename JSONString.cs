@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public class JSONString : IJSONValue {
     public JSONSpan span { get; set; }
     public IEnumerable<byte> ID => new List<byte> {7};
-    
+
     public string Value;
 
     public JSONString(string value) {

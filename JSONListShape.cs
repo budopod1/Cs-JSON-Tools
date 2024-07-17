@@ -6,7 +6,7 @@ public class JSONListShape : IJSONListShape {
     public JSONListShape(IJSONShape sub) {
         this.sub = sub;
     }
-    
+
     public void Verify(IJSONValue value) {
         if (value is JSONList) {
             foreach (IJSONValue subValue in ((JSONList)value)) {

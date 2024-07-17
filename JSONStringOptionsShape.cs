@@ -8,7 +8,7 @@ public class JSONStringOptionsShape : IJSONShape {
     public JSONStringOptionsShape(List<string> options) {
         this.options = options;
     }
-    
+
     public void Verify(IJSONValue value) {
         if (!(value is JSONString)) {
             throw new InvalidJSONException("Expected string", value);
