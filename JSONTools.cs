@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Collections.Generic;
@@ -483,5 +484,25 @@ public static class JSONTools {
         }
         Console.ResetColor();
         Console.WriteLine();
+    }
+
+    public static IJSONValue ParseJSONFile(string path) {
+        return ParseJSONFile(path, _ => {});
+    }
+
+    public static IJSONValue ParseJSONFile(string path, Action<string> useFileText) {
+        using (FileStream file = new FileStream(path, FileMode.Open)) {
+            BinaryReader bytes = new BinaryReader(file);
+            if (bytes.PeekChar() == 0x42 /* the magic number for a BinJSON file, ord('B') */) {
+                return BJSONEnv.Deserialize(bytes);
+            } else {
+                string fileText;
+                using (StreamReader reader = new StreamReader(file)) {
+                    fileText = reader.ReadToEnd();
+                }
+                useFileText(fileText);
+                return ParseJSON(fileText);
+            }
+        }
     }
 }
