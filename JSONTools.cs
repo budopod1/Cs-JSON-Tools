@@ -10,11 +10,15 @@ public static class JSONTools {
         if (list.Count == 0) return "none";
         if (list.Count == 1) return list[0];
         if (list.Count == 2) return $"{list[0]} {joiner} {list[1]}";
-        string beginning = "";
+        StringBuilder result = new StringBuilder();
         for (int i = 0; i < list.Count-1; i++) {
-            beginning += list[i] + ", ";
+            result.Append(list[i]);
+            result.Append(", ");
         }
-        return $"{beginning}{joiner} {list[list.Count-1]}";
+        result.Append(joiner);
+        result.Append(' ');
+        result.Append(list[list.Count-1]);
+        return result.ToString();
     }
 
     public static string ToLiteral(string input) {
@@ -230,7 +234,7 @@ public static class JSONTools {
         Expect(text, "\"", i, out i);
         int start = i;
         bool wasBackslash = false;
-        string content = "";
+        StringBuilder content = new StringBuilder();
         bool finished = false;
         for (; i < text.Length; i++) {
             char chr = text[i];
@@ -245,7 +249,7 @@ public static class JSONTools {
                     break;
                 }
             }
-            content += chr;
+            content.Append(chr);
         }
         if (!finished) {
             throw new InvalidJSONException(
@@ -253,7 +257,7 @@ public static class JSONTools {
             );
         }
         try {
-            return FromLiteral(content, hasQuotes: false);
+            return FromLiteral(content.ToString(), hasQuotes: false);
         } catch (LiteralDecodeException e) {
             throw new InvalidJSONException(
                 e.Message, new JSONSpan(e.Position+start)
@@ -271,7 +275,7 @@ public static class JSONTools {
             );
         }
         int start = i;
-        string numberText = "";
+        StringBuilder numberBuilder = new StringBuilder();
         string numberChars = "0123456789E+-.";
         bool isDouble = false;
         bool isStart = true;
@@ -287,9 +291,10 @@ public static class JSONTools {
                 break;
             }
             if (chr == '.' || chr == 'E') isDouble = true;
-            numberText += chr;
+            numberBuilder.Append(chr);
             isStart = false;
         }
+        string numberText = numberBuilder.ToString();
         try {
             if (isDouble) {
                 return new NumUnion(Double.Parse(
