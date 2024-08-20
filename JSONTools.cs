@@ -10,7 +10,7 @@ public static class JSONTools {
         if (list.Count == 0) return "none";
         if (list.Count == 1) return list[0];
         if (list.Count == 2) return $"{list[0]} {joiner} {list[1]}";
-        StringBuilder result = new StringBuilder();
+        StringBuilder result = new();
         for (int i = 0; i < list.Count-1; i++) {
             result.Append(list[i]);
             result.Append(", ");
@@ -23,7 +23,7 @@ public static class JSONTools {
 
     public static string ToLiteral(string input) {
         // https://stackoverflow.com/a/14087738
-        StringBuilder literal = new StringBuilder(input.Length + 2);
+        StringBuilder literal = new(input.Length + 2);
         literal.Append("\"");
         foreach (var c in input) {
             switch (c) {
@@ -54,7 +54,7 @@ public static class JSONTools {
     }
 
     public static string ToLiteralChar(char c) {
-        StringBuilder literal = new StringBuilder(3);
+        StringBuilder literal = new(3);
         literal.Append("\"");
         switch (c) {
         case '\'': literal.Append("\\'"); break;
@@ -84,7 +84,7 @@ public static class JSONTools {
 
     public static string FromLiteral(string input, bool hasQuotes=true) {
         if (hasQuotes) input = input.Substring(1, input.Length-2);
-        StringBuilder result = new StringBuilder(input.Length);
+        StringBuilder result = new(input.Length);
         bool wasBackslash = false;
         for (int i = 0; i < input.Length; i++) {
             char chr = input[i];
@@ -234,7 +234,7 @@ public static class JSONTools {
         Expect(text, "\"", i, out i);
         int start = i;
         bool wasBackslash = false;
-        StringBuilder content = new StringBuilder();
+        StringBuilder content = new();
         bool finished = false;
         for (; i < text.Length; i++) {
             char chr = text[i];
@@ -275,7 +275,7 @@ public static class JSONTools {
             );
         }
         int start = i;
-        StringBuilder numberBuilder = new StringBuilder();
+        StringBuilder numberBuilder = new();
         string numberChars = "0123456789E+-.";
         bool isDouble = false;
         bool isStart = true;
@@ -356,7 +356,7 @@ public static class JSONTools {
                     "Expected value or '}', found EOF", new JSONSpan(i+1)
                 );
             }
-            JSONObject obj = new JSONObject();
+            JSONObject obj = [];
             if (chr == '}') {
                 Expect(text, "}", i, out i);
             } else {
@@ -381,7 +381,7 @@ public static class JSONTools {
                     "Expected value or ']', found EOF", new JSONSpan(i+1)
                 );
             }
-            JSONList list = new JSONList();
+            JSONList list = [];
             if (chr == ']') {
                 Expect(text, "]", i, out i);
             } else {
@@ -496,13 +496,13 @@ public static class JSONTools {
     }
 
     public static IJSONValue ParseJSONFile(string path, Action<string> useFileText) {
-        using (FileStream file = new FileStream(path, FileMode.Open)) {
-            BinaryReader bytes = new BinaryReader(file);
+        using (FileStream file = new(path, FileMode.Open)) {
+            BinaryReader bytes = new(file);
             if (bytes.PeekChar() == 0x42 /* the magic number for a BinJSON file, ord('B') */) {
                 return BJSONEnv.Deserialize(bytes);
             } else {
                 string fileText;
-                using (StreamReader reader = new StreamReader(file)) {
+                using (StreamReader reader = new(file)) {
                     fileText = reader.ReadToEnd();
                 }
                 useFileText(fileText);

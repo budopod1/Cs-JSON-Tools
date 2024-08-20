@@ -3,8 +3,8 @@ using System.Linq;
 using System.Collections.Generic;
 
 public class ShapedJSON {
-    IJSONValue val;
-    IJSONShape shape;
+    readonly IJSONValue val;
+    readonly IJSONShape shape;
 
     public ShapedJSON(IJSONValue val, IJSONShape shape) {
         shape.Verify(val);
@@ -13,22 +13,22 @@ public class ShapedJSON {
     }
 
     public ShapedJSON this[int key] {
-        get => new ShapedJSON(
+        get => new(
             ((JSONList)val)[key], ((IJSONListShape)shape).GetSub()
         );
         set {
             ((IJSONListShape)shape).GetSub().Verify((IJSONValue)value);
-            ((JSONList)val)[key] = ((IJSONValue)value);
+            ((JSONList)val)[key] = (IJSONValue)value;
         }
     }
 
     public ShapedJSON this[string key] {
-        get => new ShapedJSON(
+        get => new(
             ((JSONObject)val)[key], ((IJSONObjectShape)shape).GetSub(key)
         );
         set {
             ((IJSONObjectShape)shape).GetSub(key).Verify((IJSONValue)value);
-            ((JSONObject)val)[key] = ((IJSONValue)value);
+            ((JSONObject)val)[key] = (IJSONValue)value;
         }
     }
 

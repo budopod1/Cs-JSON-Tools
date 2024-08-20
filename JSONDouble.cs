@@ -2,15 +2,11 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-public class JSONDouble : IJSONValue {
+public class JSONDouble(double value) : IJSONValue {
     public JSONSpan span { get; set; }
     public IEnumerable<byte> ID => new List<byte> {2};
 
-    public double Value;
-
-    public JSONDouble(double value) {
-        Value = value;
-    }
+    public double Value = value;
 
     public string Stringify() {
         return Value.ToString();

@@ -1,5 +1,4 @@
 using System;
 
-public class InvalidBJSONException : Exception {
-    public InvalidBJSONException(string message) : base(message) {}
+public class InvalidBJSONException(string message) : Exception(message) {
 }

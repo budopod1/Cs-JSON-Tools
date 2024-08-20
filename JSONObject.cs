@@ -7,15 +7,15 @@ public class JSONObject : Dictionary<string, IJSONValue>, IJSONValue {
     public IEnumerable<byte> ID => new List<byte> {6};
 
     public string Stringify() {
-        return "{"+String.Join(", ", this.Select(pair => (
+        return "{"+String.Join(", ", this.Select(pair => 
             JSONTools.ToLiteral(pair.Key) + ": " + pair.Value.Stringify()
-        )))+"}";
+        ))+"}";
     }
 
     public string PrettyPrint(PrettyPrintConfig config) {
-        IEnumerable<string> stringifiedParts = this.Select(pair => (
+        IEnumerable<string> stringifiedParts = this.Select(pair => 
             JSONTools.ToLiteral(pair.Key) + ": " + pair.Value.PrettyPrint(config)
-        ));
+        );
         if (stringifiedParts.All(part => part.IndexOf('\n') == -1)) {
             string basicStringification = "{"+String.Join(", ", stringifiedParts)+"}";
             if (basicStringification.Length < config.MaxLineContentLen) {

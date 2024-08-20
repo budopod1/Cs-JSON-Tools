@@ -5,12 +5,12 @@ using System.Text;
 using System.Collections.Generic;
 
 public class BJSONEnv {
-    List<string> strings = new List<string>();
+    readonly List<string> strings = [];
 
-    private BJSONEnv() {}
+    BJSONEnv() {}
 
     public static IEnumerable<byte> ToVWInt(int val) {
-        List<byte> bytes = new List<byte>();
+        List<byte> bytes = [];
         do {
             byte b = (byte)(0x7F & val);
             val >>= 7;
@@ -99,7 +99,7 @@ public class BJSONEnv {
     }
 
     public JSONList ReadBJSONList(BinaryReader bytes) {
-        JSONList result = new JSONList();
+        JSONList result = [];
         int count = FromVWInt(bytes);
         if (count == 0) return result;
         byte ID = ReadByte(bytes);
@@ -110,7 +110,7 @@ public class BJSONEnv {
     }
 
     public JSONList ReadBJSONMultitypedList(BinaryReader bytes) {
-        JSONList result = new JSONList();
+        JSONList result = [];
         int count = FromVWInt(bytes);
         for (int i = 0; i < count; i++) {
             byte ID = ReadByte(bytes);
@@ -120,7 +120,7 @@ public class BJSONEnv {
     }
 
     public JSONObject ReadBJSONObject(BinaryReader bytes) {
-        JSONObject result = new JSONObject();
+        JSONObject result = [];
         int count = FromVWInt(bytes);
         for (int i = 0; i < count; i++) {
             string key = GetString(bytes);
@@ -159,7 +159,7 @@ public class BJSONEnv {
     }
 
     public static IEnumerable<byte> Serialize(IJSONValue value) {
-        BJSONEnv env = new BJSONEnv();
+        BJSONEnv env = new();
         IEnumerable<byte> magicByte = new List<byte> {0x42};
         IEnumerable<byte> dataBytes = value.ToBJSON(env);
         IEnumerable<byte> stringTable = env.CreateStringTable();
@@ -168,13 +168,13 @@ public class BJSONEnv {
 
     public static void WriteFile(string path, IJSONValue value) {
         byte[] bytes = Serialize(value).ToArray();
-        using (FileStream file = new FileStream(path, FileMode.Create)) {
+        using (FileStream file = new(path, FileMode.Create)) {
             file.Write(bytes, 0, bytes.Length);
         }
     }
 
     public static IJSONValue Deserialize(BinaryReader bytes) {
-        BJSONEnv env = new BJSONEnv();
+        BJSONEnv env = new();
         if (ReadByte(bytes) != 0x42) {
             throw new InvalidBJSONException("BJSON files must start with 0x42");
         }

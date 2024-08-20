@@ -1,15 +1,11 @@
 using System;
 
-public class JSONListShape : IJSONListShape {
-    IJSONShape sub;
-
-    public JSONListShape(IJSONShape sub) {
-        this.sub = sub;
-    }
+public class JSONListShape(IJSONShape sub) : IJSONListShape {
+    readonly IJSONShape sub = sub;
 
     public void Verify(IJSONValue value) {
         if (value is JSONList) {
-            foreach (IJSONValue subValue in ((JSONList)value)) {
+            foreach (IJSONValue subValue in (JSONList)value) {
                 sub.Verify(subValue);
             }
         } else {

@@ -1,12 +1,8 @@
 using System;
 using System.Collections.Generic;
 
-public class JSONObjectAnyKeyShape : IJSONObjectShape {
-    IJSONShape sub;
-
-    public JSONObjectAnyKeyShape(IJSONShape sub) {
-        this.sub = sub;
-    }
+public class JSONObjectAnyKeyShape(IJSONShape sub) : IJSONObjectShape {
+    readonly IJSONShape sub = sub;
 
     public void Verify(IJSONValue val) {
         JSONObject obj = val as JSONObject;

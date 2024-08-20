@@ -1,8 +1,8 @@
 using System;
 
 public class NumUnion {
-    int? i = null;
-    double? d = null;
+    readonly int? i = null;
+    readonly double? d = null;
 
     public NumUnion(int? num) {
         i = num;

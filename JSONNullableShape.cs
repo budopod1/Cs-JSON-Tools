@@ -1,11 +1,7 @@
 using System;
 
-public class JSONNullableShape : IJSONListShape, IJSONObjectShape {
-    IJSONShape norm;
-
-    public JSONNullableShape(IJSONShape norm) {
-        this.norm = norm;
-    }
+public class JSONNullableShape(IJSONShape norm) : IJSONListShape, IJSONObjectShape {
+    readonly IJSONShape norm = norm;
 
     public void Verify(IJSONValue value) {
         if (value is JSONNull) return;

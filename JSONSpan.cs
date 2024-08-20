@@ -3,8 +3,8 @@ using System.Linq;
 using System.Collections.Generic;
 
 public class JSONSpan {
-    int start;
-    int end;
+    readonly int start;
+    readonly int end;
 
     public JSONSpan(int start, int end) {
         this.start = start;

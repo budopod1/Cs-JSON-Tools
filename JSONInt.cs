@@ -2,15 +2,11 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-public class JSONInt : IJSONValue {
+public class JSONInt(int value) : IJSONValue {
     public JSONSpan span { get; set; }
     public IEnumerable<byte> ID => new List<byte> {3};
 
-    public int Value;
-
-    public JSONInt(int value) {
-        Value = value;
-    }
+    public int Value = value;
 
     public string Stringify() {
         return Value.ToString();
