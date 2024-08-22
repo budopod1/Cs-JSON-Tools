@@ -62,7 +62,6 @@ public class BinJSONEnv {
     }
 
     public IEnumerable<byte> CreateStringTable() {
-        Console.WriteLine(strings.Count);
         IEnumerable<byte> result = ToVWInt((uint)strings.Count);
         foreach (string str in strings) {
             byte[] bytes = Encoding.UTF8.GetBytes(str);
