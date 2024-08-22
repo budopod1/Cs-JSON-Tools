@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
-
 public class JSONBool(bool value) : IJSONValue {
     public JSONSpan span { get; set; }
-    public IEnumerable<byte> ID => new List<byte> {1};
+    public IEnumerable<byte> ID => [1];
 
     public bool Value = value;
 
@@ -15,11 +12,11 @@ public class JSONBool(bool value) : IJSONValue {
         return Stringify();
     }
 
-    public IEnumerable<byte> ToBJSON(BJSONEnv env) {
-        return new List<byte> {Value ? (byte)0x01 : (byte)0x00};
+    public IEnumerable<byte> ToBinJSON(BinJSONEnv env) {
+        return [Value ? (byte)0x01 : (byte)0x00];
     }
 
     public static IJSONValue OrNull(bool? val) {
-        return val.HasValue ? new JSONBool(val.Value) : (IJSONValue)new JSONNull();
+        return val.HasValue ? new JSONBool(val.Value) : new JSONNull();
     }
 }

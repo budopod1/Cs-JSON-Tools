@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 public class JSONObjectAnyKeyShape(IJSONShape sub) : IJSONObjectShape {
     readonly IJSONShape sub = sub;
 

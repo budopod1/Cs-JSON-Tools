@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
-
 public class JSONString(string value) : IJSONValue {
     public JSONSpan span { get; set; }
-    public IEnumerable<byte> ID => new List<byte> {7};
+    public IEnumerable<byte> ID => [7];
 
     public string Value = value;
 
@@ -15,11 +12,11 @@ public class JSONString(string value) : IJSONValue {
         return Stringify();
     }
 
-    public IEnumerable<byte> ToBJSON(BJSONEnv env) {
+    public IEnumerable<byte> ToBinJSON(BinJSONEnv env) {
         return env.RegisterString(Value);
     }
 
     public static IJSONValue OrNull(string str) {
-        return str != null ? new JSONString(str) : (IJSONValue)new JSONNull();
+        return str != null ? new JSONString(str) : new JSONNull();
     }
 }

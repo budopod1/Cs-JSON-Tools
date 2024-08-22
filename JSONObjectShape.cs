@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 public class JSONObjectShape(Dictionary<string, IJSONShape> shape) : IJSONObjectShape {
     readonly Dictionary<string, IJSONShape> shape = shape;
 

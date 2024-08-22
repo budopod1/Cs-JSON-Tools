@@ -1,7 +1,3 @@
-using System;
-using System.Linq;
-using System.Collections.Generic;
-
 public class JSONStringOptionsShape(List<string> options) : IJSONShape {
     readonly List<string> options = options;
 

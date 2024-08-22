@@ -1,5 +1,3 @@
-using System;
-
 public class JSONNullableShape(IJSONShape norm) : IJSONListShape, IJSONObjectShape {
     readonly IJSONShape norm = norm;
 

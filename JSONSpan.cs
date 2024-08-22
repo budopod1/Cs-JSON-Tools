@@ -1,7 +1,3 @@
-using System;
-using System.Linq;
-using System.Collections.Generic;
-
 public class JSONSpan {
     readonly int start;
     readonly int end;
@@ -12,8 +8,8 @@ public class JSONSpan {
     }
 
     public JSONSpan(int i) {
-        this.start = i;
-        this.end = i;
+        start = i;
+        end = i;
     }
 
     public int GetStart() {
@@ -39,7 +35,7 @@ public class JSONSpan {
     }
 
     public static JSONSpan Merge(JSONSpan a, JSONSpan b) {
-        return Merge(new List<JSONSpan> {a, b});
+        return Merge([a, b]);
     }
 
     public override string ToString() {

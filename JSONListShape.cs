@@ -1,5 +1,3 @@
-using System;
-
 public class JSONListShape(IJSONShape sub) : IJSONListShape {
     readonly IJSONShape sub = sub;
 

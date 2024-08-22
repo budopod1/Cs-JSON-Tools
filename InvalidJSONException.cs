@@ -1,5 +1,3 @@
-using System;
-
 public class InvalidJSONException : Exception {
     public JSONSpan span = null;
 

@@ -1,5 +1,3 @@
-using System;
-
 public class PrettyPrintConfig(int indentationAmount, int maxLineContentLen) {
     public int IndentationAmount = indentationAmount;
     public int MaxLineContentLen = maxLineContentLen;

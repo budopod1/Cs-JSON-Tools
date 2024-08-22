@@ -1,10 +1,6 @@
-using System;
-using System.Linq;
-using System.Collections.Generic;
-
 public class JSONInt(int value) : IJSONValue {
     public JSONSpan span { get; set; }
-    public IEnumerable<byte> ID => new List<byte> {3};
+    public IEnumerable<byte> ID => [3];
 
     public int Value = value;
 
@@ -16,11 +12,11 @@ public class JSONInt(int value) : IJSONValue {
         return Stringify();
     }
 
-    public IEnumerable<byte> ToBJSON(BJSONEnv env) {
-        return BJSONEnv.ToVWInt(Value);
+    public IEnumerable<byte> ToBinJSON(BinJSONEnv env) {
+        return BinJSONEnv.ToVWInt((uint)(Value < 0 ? -Value << 1 | 1 : Value << 1));
     }
 
     public static IJSONValue OrNull(int? num) {
-        return num.HasValue ? new JSONInt(num.Value) : (IJSONValue)new JSONNull();
+        return num.HasValue ? new JSONInt(num.Value) : new JSONNull();
     }
 }

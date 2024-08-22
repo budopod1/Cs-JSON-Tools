@@ -1,5 +1,3 @@
-using System;
-
 public class JSONStringShape : IJSONShape {
     public void Verify(IJSONValue value) {
         if (!(value is JSONString)) {

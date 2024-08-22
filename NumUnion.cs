@@ -1,5 +1,3 @@
-using System;
-
 public class NumUnion {
     readonly int? i = null;
     readonly double? d = null;

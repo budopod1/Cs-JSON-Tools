@@ -1,10 +1,6 @@
-using System;
-using System.Linq;
-using System.Collections.Generic;
-
 public class JSONNull : IJSONValue {
     public JSONSpan span { get; set; }
-    public IEnumerable<byte> ID => new List<byte> {5};
+    public IEnumerable<byte> ID => [5];
 
     public string Stringify() {
         return "null";
@@ -14,7 +10,7 @@ public class JSONNull : IJSONValue {
         return Stringify();
     }
 
-    public IEnumerable<byte> ToBJSON(BJSONEnv env) {
-        return new List<byte>();
+    public IEnumerable<byte> ToBinJSON(BinJSONEnv env) {
+        return [];
     }
 }

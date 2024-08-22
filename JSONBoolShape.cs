@@ -1,5 +1,3 @@
-using System;
-
 public class JSONBoolShape : IJSONShape {
     public void Verify(IJSONValue value) {
         if (!(value is JSONBool)) {

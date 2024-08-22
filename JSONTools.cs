@@ -1,8 +1,4 @@
-using System;
-using System.IO;
-using System.Linq;
 using System.Text;
-using System.Collections.Generic;
 
 public static class JSONTools {
     public static string ENList(IEnumerable<string> enumerable, string joiner="and") {
@@ -110,7 +106,7 @@ public static class JSONTools {
                     int code = 0;
                     int scale = 1;
                     for (int j = 3; j >= 0; j--) {
-                        char nibble = Char.ToLower(hex[j]);
+                        char nibble = char.ToLower(hex[j]);
                         if ('0' <= nibble && nibble <= '9') {
                             code += scale * (nibble - '0');
                         } else if ('a' <= nibble && nibble <= 'f') {
@@ -164,7 +160,7 @@ public static class JSONTools {
         }
     }
 
-    public static char[] Whitespace = {' ', '\n', '\t'};
+    public static char[] Whitespace = [' ', '\n', '\t'];
 
     static void Expect(string text, string next, int i_, out int i) {
         i = i_;
@@ -297,11 +293,11 @@ public static class JSONTools {
         string numberText = numberBuilder.ToString();
         try {
             if (isDouble) {
-                return new NumUnion(Double.Parse(
+                return new NumUnion(double.Parse(
                     numberText, System.Globalization.NumberStyles.Float
                 ));
             } else {
-                return new NumUnion(Int32.Parse(numberText));
+                return new NumUnion(int.Parse(numberText));
             }
         } catch (FormatException) {
             throw new InvalidJSONException(
@@ -367,7 +363,7 @@ public static class JSONTools {
                     IJSONValue value = ExpectJSON(text, i, out i);
                     obj[key] = value;
                     sep = ExpectAny(
-                        text, new string[] {",", "}"}, i, out i
+                        text, [",", "}"], i, out i
                     );
                 } while (sep != "}");
             }
@@ -390,7 +386,7 @@ public static class JSONTools {
                     IJSONValue value = ExpectJSON(text, i, out i);
                     list.Add(value);
                     sep = ExpectAny(
-                        text, new string[] {",", "]"}, i, out i
+                        text, [",", "]"], i, out i
                     );
                 } while (sep != "]");
             }
@@ -398,7 +394,7 @@ public static class JSONTools {
             result = list;
         } else if ('A' <= chr.Value && chr.Value <= 'z') {
             string found = ExpectAny(
-                text, new string[] {"true", "false", "null"}, i, out i
+                text, ["true", "false", "null"], i, out i
             );
             if (found == "true") {
                 result = new JSONBool(true);
@@ -499,7 +495,7 @@ public static class JSONTools {
         using (FileStream file = new(path, FileMode.Open)) {
             BinaryReader bytes = new(file);
             if (bytes.PeekChar() == 0x42 /* the magic number for a BinJSON file, ord('B') */) {
-                return BJSONEnv.Deserialize(bytes);
+                return BinJSONEnv.Deserialize(bytes);
             } else {
                 string fileText;
                 using (StreamReader reader = new(file)) {
@@ -509,5 +505,25 @@ public static class JSONTools {
                 return ParseJSON(fileText);
             }
         }
+    }
+
+    static void DetectCircularJSON(IJSONValue json, HashSet<IJSONValue> recorded) {
+        if (recorded.Contains(json)) {
+            throw new InvalidJSONException("Detected circular JSON");
+        }
+        recorded.Add(json);
+        if (json is JSONList list) {
+            foreach (IJSONValue sub in list) {
+                DetectCircularJSON(sub, recorded);
+            }
+        } else if (json is JSONObject obj) {
+            foreach (IJSONValue sub in obj.Values) {
+                DetectCircularJSON(sub, recorded);
+            } 
+        }
+    }
+
+    public static void DetectCircularJSON(IJSONValue json) {
+        DetectCircularJSON(json, []);
     }
 }

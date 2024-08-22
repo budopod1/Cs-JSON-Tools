@@ -1,10 +1,6 @@
-using System;
-using System.Linq;
-using System.Collections.Generic;
-
 public class JSONDouble(double value) : IJSONValue {
     public JSONSpan span { get; set; }
-    public IEnumerable<byte> ID => new List<byte> {2};
+    public IEnumerable<byte> ID => [2];
 
     public double Value = value;
 
@@ -16,7 +12,7 @@ public class JSONDouble(double value) : IJSONValue {
         return Stringify();
     }
 
-    public IEnumerable<byte> ToBJSON(BJSONEnv env) {
+    public IEnumerable<byte> ToBinJSON(BinJSONEnv env) {
         byte[] bytes = BitConverter.GetBytes(Value);
         if (BitConverter.IsLittleEndian)
             Array.Reverse(bytes);
@@ -24,6 +20,6 @@ public class JSONDouble(double value) : IJSONValue {
     }
 
     public static IJSONValue OrNull(double? num) {
-        return num.HasValue ? new JSONDouble(num.Value) : (IJSONValue)new JSONNull();
+        return num.HasValue ? new JSONDouble(num.Value) : new JSONNull();
     }
 }
