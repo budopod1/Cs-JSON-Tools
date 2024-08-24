@@ -13,7 +13,7 @@ public class JSONInt(int value) : IJSONValue {
     }
 
     public IEnumerable<byte> ToBinJSON(BinJSONEnv env) {
-        return BinJSONEnv.ToVWInt((uint)(Value < 0 ? -Value << 1 | 1 : Value << 1));
+        return BinJSONEnv.ToVWInt((uint)Value);
     }
 
     public static IJSONValue OrNull(int? num) {

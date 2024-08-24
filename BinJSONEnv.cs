@@ -91,8 +91,7 @@ public class BinJSONEnv {
     }
 
     public JSONInt ReadBinJSONInt(BinaryReader bytes) {
-        int raw = (int)FromVWInt(bytes);
-        return new JSONInt((raw >> 1) * ((raw & 1) == 1 ? -1 : 1));
+        return new JSONInt((int)FromVWInt(bytes));
     }
 
     public JSONList ReadBinJSONList(BinaryReader bytes) {
