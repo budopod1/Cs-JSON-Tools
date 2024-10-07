@@ -13,26 +13,23 @@ public static class JSONTools {
         }
         result.Append(joiner);
         result.Append(' ');
-        result.Append(list[list.Count-1]);
+        result.Append(list[^1]);
         return result.ToString();
     }
 
     public static string ToLiteral(string input) {
         // https://stackoverflow.com/a/14087738
         StringBuilder literal = new(input.Length + 2);
-        literal.Append("\"");
+        literal.Append('"');
         foreach (var c in input) {
             switch (c) {
             case '\"': literal.Append("\\\""); break;
             case '\\': literal.Append(@"\\"); break;
-            case '\0': literal.Append(@"\0"); break;
-            case '\a': literal.Append(@"\a"); break;
             case '\b': literal.Append(@"\b"); break;
             case '\f': literal.Append(@"\f"); break;
             case '\n': literal.Append(@"\n"); break;
             case '\r': literal.Append(@"\r"); break;
             case '\t': literal.Append(@"\t"); break;
-            case '\v': literal.Append(@"\v"); break;
             default:
                 // ASCII printable character
                 if (c >= 0x20 && c <= 0x7e) {
@@ -45,24 +42,21 @@ public static class JSONTools {
                 break;
             }
         }
-        literal.Append("\"");
+        literal.Append('"');
         return literal.ToString();
     }
 
     public static string ToLiteralChar(char c) {
         StringBuilder literal = new(3);
-        literal.Append("\"");
+        literal.Append('"');
         switch (c) {
         case '\'': literal.Append("\\'"); break;
         case '\\': literal.Append(@"\\"); break;
-        case '\0': literal.Append(@"\0"); break;
-        case '\a': literal.Append(@"\a"); break;
         case '\b': literal.Append(@"\b"); break;
         case '\f': literal.Append(@"\f"); break;
         case '\n': literal.Append(@"\n"); break;
         case '\r': literal.Append(@"\r"); break;
         case '\t': literal.Append(@"\t"); break;
-        case '\v': literal.Append(@"\v"); break;
         default:
             // ASCII printable character
             if (c >= 0x20 && c <= 0x7e) {
@@ -74,12 +68,12 @@ public static class JSONTools {
             }
             break;
         }
-        literal.Append("\"");
+        literal.Append('"');
         return literal.ToString();
     }
 
     public static string FromLiteral(string input, bool hasQuotes=true) {
-        if (hasQuotes) input = input.Substring(1, input.Length-2);
+        if (hasQuotes) input = input[1..^1];
         StringBuilder result = new(input.Length);
         bool wasBackslash = false;
         for (int i = 0; i < input.Length; i++) {
@@ -88,6 +82,7 @@ public static class JSONTools {
                 switch (chr) {
                 case '"': result.Append('"'); break;
                 case '\\': result.Append('\\'); break;
+                case '/': result.Append('/'); break;
                 case '0': result.Append('\0'); break;
                 case 'a': result.Append('\a'); break;
                 case 'b': result.Append('\b'); break;
@@ -142,19 +137,20 @@ public static class JSONTools {
     public static char FromLiteralChar(string input, bool hasQuotes=true) {
         int offset = hasQuotes ? 1 : 0;
         if (input[offset] == '\\') {
-            switch (input[offset+1]) {
-            case '"': return '"';
-            case '\\': return '\\';
-            case '0': return '\0';
-            case 'a': return '\a';
-            case 'b': return '\b';
-            case 'f': return '\f';
-            case 'n': return '\n';
-            case 'r': return '\r';
-            case 't': return '\t';
-            case 'v': return '\v';
-            default: return input[offset+1];
-            }
+            return input[offset + 1] switch {
+                '"' => '"',
+                '\\' => '\\',
+                '/' => '/',
+                '0' => '\0',
+                'a' => '\a',
+                'b' => '\b',
+                'f' => '\f',
+                'n' => '\n',
+                'r' => '\r',
+                't' => '\t',
+                'v' => '\v',
+                char val => val
+            };
         } else {
             return input[offset];
         }
@@ -170,7 +166,7 @@ public static class JSONTools {
                     $"Expected {ToLiteral(next)}, found EOF", new JSONSpan(i)
                 );
             }
-            if (text.Substring(i).StartsWith(next)) {
+            if (text[i..].StartsWith(next)) {
                 i += next.Length;
                 return;
             }
@@ -193,7 +189,7 @@ public static class JSONTools {
                 );
             }
             foreach (string next in nexts) {
-                if (text.Substring(i).StartsWith(next)) {
+                if (text[i..].StartsWith(next)) {
                     i += next.Length;
                     return next;
                 }
