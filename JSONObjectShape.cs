@@ -1,3 +1,4 @@
+namespace CsJSONTools;
 public class JSONObjectShape(Dictionary<string, IJSONShape> shape) : IJSONObjectShape {
     readonly Dictionary<string, IJSONShape> shape = shape;
 

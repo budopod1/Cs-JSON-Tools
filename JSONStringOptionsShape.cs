@@ -1,3 +1,4 @@
+namespace CsJSONTools;
 public class JSONStringOptionsShape(List<string> options) : IJSONShape {
     readonly List<string> options = options;
 

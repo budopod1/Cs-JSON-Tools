@@ -1,3 +1,4 @@
+namespace CsJSONTools;
 public class JSONSpan {
     readonly int start;
     readonly int end;

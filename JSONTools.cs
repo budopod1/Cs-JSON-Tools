@@ -1,5 +1,6 @@
 using System.Text;
 
+namespace CsJSONTools;
 public static class JSONTools {
     public static string ENList(IEnumerable<string> enumerable, string joiner="and") {
         List<string> list = enumerable.ToList();

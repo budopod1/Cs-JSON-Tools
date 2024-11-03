@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 
+namespace CsJSONTools;
 public class JSONList : Collection<IJSONValue>, IJSONValue {
     public JSONSpan span { get; set; }
     public IEnumerable<byte> ID => [IsUnitype() ? (byte)4 : (byte)8];

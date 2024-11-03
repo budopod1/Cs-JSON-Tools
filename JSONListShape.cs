@@ -1,3 +1,4 @@
+namespace CsJSONTools;
 public class JSONListShape(IJSONShape sub) : IJSONListShape {
     readonly IJSONShape sub = sub;
 

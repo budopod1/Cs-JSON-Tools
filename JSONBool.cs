@@ -1,3 +1,4 @@
+namespace CsJSONTools;
 public class JSONBool(bool value) : IJSONValue {
     public JSONSpan span { get; set; }
     public IEnumerable<byte> ID => [1];

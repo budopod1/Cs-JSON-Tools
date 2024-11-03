@@ -1,3 +1,4 @@
+namespace CsJSONTools;
 public class InvalidJSONException : Exception {
     public JSONSpan span = null;
 

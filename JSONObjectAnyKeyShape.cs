@@ -1,3 +1,4 @@
+namespace CsJSONTools;
 public class JSONObjectAnyKeyShape(IJSONShape sub) : IJSONObjectShape {
     readonly IJSONShape sub = sub;
 

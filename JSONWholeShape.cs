@@ -1,3 +1,4 @@
+namespace CsJSONTools;
 public class JSONWholeShape : IJSONShape {
     public void Verify(IJSONValue value) {
         JSONInt intHolder = value as JSONInt;

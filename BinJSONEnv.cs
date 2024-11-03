@@ -1,5 +1,6 @@
 using System.Text;
 
+namespace CsJSONTools;
 public class BinJSONEnv {
     readonly List<string> strings = [];
 

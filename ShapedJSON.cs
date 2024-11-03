@@ -1,3 +1,4 @@
+namespace CsJSONTools;
 public class ShapedJSON {
     readonly IJSONValue val;
     readonly IJSONShape shape;

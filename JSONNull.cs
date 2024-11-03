@@ -1,3 +1,4 @@
+namespace CsJSONTools;
 public class JSONNull : IJSONValue {
     public JSONSpan span { get; set; }
     public IEnumerable<byte> ID => [5];

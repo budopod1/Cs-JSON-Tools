@@ -1,3 +1,4 @@
+namespace CsJSONTools;
 public class JSONString(string value) : IJSONValue {
     public JSONSpan span { get; set; }
     public IEnumerable<byte> ID => [7];

@@ -1,3 +1,4 @@
+namespace CsJSONTools;
 public class JSONObject : Dictionary<string, IJSONValue>, IJSONValue {
     public JSONSpan span { get; set; }
     public IEnumerable<byte> ID => [6];

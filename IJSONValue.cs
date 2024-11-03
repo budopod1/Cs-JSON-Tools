@@ -1,3 +1,4 @@
+namespace CsJSONTools;
 public interface IJSONValue {
     IEnumerable<byte> ID { get; }
     JSONSpan span { get; set; }
