@@ -516,7 +516,7 @@ public static class JSONTools {
         } else if (json is JSONObject obj) {
             foreach (IJSONValue sub in obj.Values) {
                 DetectCircularJSON(sub, recorded);
-            } 
+            }
         }
     }
 
