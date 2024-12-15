@@ -89,11 +89,12 @@ public class ShapedJSON {
     }
 
     public IEnumerable<KeyValuePair<string, ShapedJSON>> IterObject() {
-        return GetObject().Select(pair => new KeyValuePair<string, ShapedJSON>(
-            pair.Key, new ShapedJSON(
-                pair.Value, ((IJSONObjectShape)shape).GetSub(pair.Key)
-            )
-        ));
+        return GetObject().Select(pair => {
+            IJSONShape subshape = ((IJSONObjectShape)shape).GetSub(pair.Key);
+            return new KeyValuePair<string, ShapedJSON>(
+                pair.Key, subshape == null ? null : new ShapedJSON(pair.Value, subshape)
+            );
+        }).Where(pair => pair.Value != null);
     }
 
     public int ListCount() {

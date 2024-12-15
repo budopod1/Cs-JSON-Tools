@@ -1,5 +1,5 @@
 namespace CsJSONTools;
-public class JSONObjectShape(Dictionary<string, IJSONShape> shape) : IJSONObjectShape {
+public class JSONObjectOptionalShape(Dictionary<string, IJSONShape> shape) : IJSONObjectShape {
     readonly Dictionary<string, IJSONShape> shape = shape;
 
     public void Verify(IJSONValue val) {
@@ -8,13 +8,14 @@ public class JSONObjectShape(Dictionary<string, IJSONShape> shape) : IJSONObject
                 "Expected object", val
             );
         }
-        foreach (KeyValuePair<string, IJSONShape> pair in shape) {
-            if (!obj.TryGetValue(pair.Key, out IJSONValue sub)) {
+        foreach (KeyValuePair<string, IJSONValue> pair in obj) {
+            if (shape.TryGetValue(pair.Key, out IJSONShape subshape)) {
+                subshape.Verify(pair.Value);
+            } else {
                 throw new InvalidJSONException(
-                    $"Required key '{pair.Key}' not found", val
+                    $"Unexpected key '{pair.Key}'", obj
                 );
             }
-            pair.Value.Verify(sub);
         }
     }
 

@@ -3,8 +3,7 @@ public class JSONObjectAnyKeyShape(IJSONShape sub) : IJSONObjectShape {
     readonly IJSONShape sub = sub;
 
     public void Verify(IJSONValue val) {
-        JSONObject obj = val as JSONObject;
-        if (obj == null) {
+        if (val is not JSONObject obj) {
             throw new InvalidJSONException(
                 "Expected object", val
             );
