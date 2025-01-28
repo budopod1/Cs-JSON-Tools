@@ -488,16 +488,19 @@ public static class JSONTools {
         return ParseJSONFile(path, _ => {});
     }
 
+    public static string ReadFileText(StreamReader reader) {
+        using (StreamReader reader2 = reader) {
+            return reader2.ReadToEnd().Replace("\r\n", "\n");
+        }
+    }
+
     public static IJSONValue ParseJSONFile(string path, Action<string> useFileText) {
         using FileStream file = new(path, FileMode.Open);
         BinaryReader bytes = new(file);
         if (bytes.PeekChar() == 0x42 /* the magic number for a BinJSON file, ord('B') */) {
             return BinJSONEnv.Deserialize(bytes);
         } else {
-            string fileText;
-            using (StreamReader reader = new(file)) {
-                fileText = reader.ReadToEnd();
-            }
+            string fileText = ReadFileText(new StreamReader(file));
             useFileText(fileText);
             return ParseJSON(fileText);
         }
