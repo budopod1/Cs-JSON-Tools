@@ -46,6 +46,7 @@ public class BinJSONEnv {
     }
 
     public IEnumerable<byte> RegisterString(string str) {
+        ArgumentNullException.ThrowIfNull(str);
         int idx = strings.IndexOf(str);
         if (idx == -1) {
             idx = strings.Count;
