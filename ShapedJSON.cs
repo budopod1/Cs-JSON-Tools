@@ -97,12 +97,16 @@ public class ShapedJSON {
         }).Where(pair => pair.Value != null);
     }
 
+    public bool HasKey(string key) {
+        return GetObject().ContainsKey(key);
+    }
+
     public int ListCount() {
-        return ((JSONList)val).Count;
+        return GetList().Count;
     }
 
     public int ObjectCount() {
-        return ((JSONObject)val).Count;
+        return GetObject().Count;
     }
 
     public IJSONValue GetJSON() {
