@@ -87,18 +87,21 @@ public static class JSONTools {
                 case '0': result.Append('\0'); break;
                 case 'a': result.Append('\a'); break;
                 case 'b': result.Append('\b'); break;
+                case 'e': result.Append('\x1b'); break;
                 case 'f': result.Append('\f'); break;
                 case 'n': result.Append('\n'); break;
                 case 'r': result.Append('\r'); break;
                 case 't': result.Append('\t'); break;
                 case 'v': result.Append('\v'); break;
+                case 'x':
                 case 'u':
-                    if (i + 4 >= input.Length) {
+                    int hexLen = chr == 'u' ? 4 : 2;
+                    if (i + hexLen >= input.Length) {
                         throw new LiteralDecodeException(
                             "Expected unicode code after '\\u', found EOF", i
                         );
                     }
-                    string hex = input.Substring(i+1, 4);
+                    string hex = input.Substring(i+1, hexLen);
                     int code = 0;
                     int scale = 1;
                     for (int j = 3; j >= 0; j--) {
@@ -116,7 +119,7 @@ public static class JSONTools {
                         scale *= 16;
                     }
                     result.Append((char)code);
-                    i += 4;
+                    i += hexLen;
                     break;
                 default:
                     throw new LiteralDecodeException(
