@@ -104,7 +104,7 @@ public static class JSONTools {
                     string hex = input.Substring(i+1, hexLen);
                     int code = 0;
                     int scale = 1;
-                    for (int j = 3; j >= 0; j--) {
+                    for (int j = hexLen-1; j >= 0; j--) {
                         char nibble = char.ToLower(hex[j]);
                         if ('0' <= nibble && nibble <= '9') {
                             code += scale * (nibble - '0');
@@ -136,28 +136,6 @@ public static class JSONTools {
             }
         }
         return result.ToString();
-    }
-
-    public static char FromLiteralChar(string input, bool hasQuotes=true) {
-        int offset = hasQuotes ? 1 : 0;
-        if (input[offset] == '\\') {
-            return input[offset + 1] switch {
-                '"' => '"',
-                '\\' => '\\',
-                '/' => '/',
-                '0' => '\0',
-                'a' => '\a',
-                'b' => '\b',
-                'f' => '\f',
-                'n' => '\n',
-                'r' => '\r',
-                't' => '\t',
-                'v' => '\v',
-                char val => val
-            };
-        } else {
-            return input[offset];
-        }
     }
 
     public static char[] Whitespace = [' ', '\n', '\t'];
