@@ -123,7 +123,7 @@ public static class JSONTools {
                     break;
                 default:
                     throw new LiteralDecodeException(
-                        $"Invalid escape code, '\\{ToLiteralChar(chr)}'", i
+                        $"Invalid escape code, '\\{chr}'", i
                     );
                 }
                 wasBackslash = false;
