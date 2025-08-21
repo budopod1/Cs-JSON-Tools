@@ -82,6 +82,7 @@ public static class JSONTools {
             if (wasBackslash) {
                 switch (chr) {
                 case '"': result.Append('"'); break;
+                case '\'': result.Append('\''); break;
                 case '\\': result.Append('\\'); break;
                 case '/': result.Append('/'); break;
                 case '0': result.Append('\0'); break;
